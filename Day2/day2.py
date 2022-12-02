@@ -8,11 +8,11 @@ Using this we can easily compute the game result.
 """
 
 
-def game_result(player_1, player_2):  # 0 if lost, 1 if draw, 2 if won
+def game_result(player_1: int, player_2: int) -> int:  # 0 if lost, 1 if draw, 2 if won
     return (1 + player_2 - player_1) % 3
 
 
-def player_2_move_round_2(player_1, player_2):
+def player_2_move_round_2(player_1: int, player_2: int) -> int:
     return (player_1 + player_2 - 1) % 3
 
 
@@ -34,7 +34,7 @@ for player_1 in player_1_key:
         ) + 3 * game_result(player_1_value, player_2_value)
 
 
-def func_from_dict(dictionary, input):
+def func_from_dict(dictionary: dict, input: str):
     try:
         return dictionary[input]
     except KeyError:
