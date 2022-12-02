@@ -20,14 +20,14 @@ player_1_key = {"A": 0, "B": 1, "C": 2}
 player_2_key = {"X": 0, "Y": 1, "Z": 2}
 
 # We compute the score tables for both players
-results_dict_1, results_dict_2 = dict(), dict()
+results_round_1, results_round_2 = dict(), dict()
 for player_1 in player_1_key:
     player_1_value = player_1_key[player_1]
     for player_2 in player_2_key:
         player_2_value = player_2_key[player_2]
-        results_dict_1[f"{player_1} {player_2}"] = (player_2_value + 1) + 3 * game_result(player_1_value, player_2_value)
+        results_round_1[f"{player_1} {player_2}"] = (player_2_value + 1) + 3 * game_result(player_1_value, player_2_value)
         player_2_value = player_2_move_round_2(player_1_value, player_2_value)
-        results_dict_2[f"{player_1} {player_2}"] = (player_2_value + 1) + 3 * game_result(player_1_value, player_2_value)
+        results_round_2[f"{player_1} {player_2}"] = (player_2_value + 1) + 3 * game_result(player_1_value, player_2_value)
 
 score_round_1 = 0
 score_round_2 = 0
@@ -35,8 +35,8 @@ score_round_2 = 0
 with open("input.txt") as f:
     for line in f:
         line = line.strip()
-        score_round_1 += results_dict_1[line]
-        score_round_2 += results_dict_2[line]
+        score_round_1 += results_round_1[line]
+        score_round_2 += results_round_2[line]
 
 
 print(f"The final score for Round 1 is {score_round_1}")
