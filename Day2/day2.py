@@ -3,7 +3,7 @@ We codify the outcomes as follows:
 - 0 for Rock
 - 1 for Paper
 - 2 for Scissors
-Then Draw if equal, Win if index for player 2 is one less than for player 1, Lose otherwise.
+Then Draw if equal, Win if index for player 2 is one more than for player 1, Lose otherwise.
 """
 
 def game_result(player_1, player_2):
