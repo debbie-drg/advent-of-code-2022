@@ -34,19 +34,17 @@ for player_1 in player_1_key:
         ) + 3 * game_result(player_1_value, player_2_value)
 
 
-def func_round_1(game):
-    return results_round_1[game]
-
-
-def func_round_2(game):
-    return results_round_2[game]
+def func_from_dict(dictionary, input):
+    try:
+        return dictionary[input]
+    except KeyError:
+        return 0
 
 
 with open("input.txt") as f:
     input_games = f.read().split(sep="\n")
-    input_games.remove('') # In case there is an empty line at the end.
-    score_round_1 = sum(map(func_round_1, input_games))
-    score_round_2 = sum(map(func_round_2, input_games))
+    score_round_1 = sum(map(lambda x : func_from_dict(results_round_1, x), input_games))
+    score_round_2 = sum(map(lambda x : func_from_dict(results_round_2, x), input_games))
 
 
 print(f"The final score for Round 1 is {score_round_1}")
