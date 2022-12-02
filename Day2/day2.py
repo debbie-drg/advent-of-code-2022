@@ -25,18 +25,28 @@ for player_1 in player_1_key:
     player_1_value = player_1_key[player_1]
     for player_2 in player_2_key:
         player_2_value = player_2_key[player_2]
-        results_round_1[f"{player_1} {player_2}"] = (player_2_value + 1) + 3 * game_result(player_1_value, player_2_value)
+        results_round_1[f"{player_1} {player_2}"] = (
+            player_2_value + 1
+        ) + 3 * game_result(player_1_value, player_2_value)
         player_2_value = player_2_move_round_2(player_1_value, player_2_value)
-        results_round_2[f"{player_1} {player_2}"] = (player_2_value + 1) + 3 * game_result(player_1_value, player_2_value)
+        results_round_2[f"{player_1} {player_2}"] = (
+            player_2_value + 1
+        ) + 3 * game_result(player_1_value, player_2_value)
 
-score_round_1 = 0
-score_round_2 = 0
+
+def func_round_1(game):
+    return results_round_1[game]
+
+
+def func_round_2(game):
+    return results_round_2[game]
+
 
 with open("input.txt") as f:
-    for line in f:
-        line = line.strip()
-        score_round_1 += results_round_1[line]
-        score_round_2 += results_round_2[line]
+    input_games = f.read().split(sep="\n")
+    input_games.remove('') # In case there is an empty line at the end.
+    score_round_1 = sum(map(func_round_1, input_games))
+    score_round_2 = sum(map(func_round_2, input_games))
 
 
 print(f"The final score for Round 1 is {score_round_1}")
