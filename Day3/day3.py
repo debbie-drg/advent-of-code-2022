@@ -1,6 +1,3 @@
-from collections import Counter
-
-
 def find_repeated(strings):
     for item in strings[0]:
         if all([item in strings[i] for i in range(1, len(strings))]):
