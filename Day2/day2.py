@@ -35,14 +35,12 @@ for player_1 in player_1_key:
 
 
 def func_from_dict(dictionary: dict, input: str):
-    try:
-        return dictionary[input]
-    except KeyError:
-        return 0
+    return dictionary[input]
 
 
 with open("input.txt") as f:
     input_games = f.read().split(sep="\n")
+    input_games.remove("")
     score_round_1 = sum(map(lambda x : func_from_dict(results_round_1, x), input_games))
     score_round_2 = sum(map(lambda x : func_from_dict(results_round_2, x), input_games))
 
