@@ -1,22 +1,22 @@
-def find_repeated(strings):
+def find_repeated(strings: list[str]) -> str:
     for item in strings[0]:
         if all([item in strings[i] for i in range(1, len(strings))]):
             return item
 
 
-def split_in_half(string):
+def split_in_half(string: str) -> list[str]:
     split_point = int(len(string) / 2)
     return [string[:split_point], string[split_point:]]
 
 
-def group_elements(string_list, number_per_group):
+def group_elements(string_list: list[str], number_per_group: int) -> list[list[str]]:
     return [
         [string_list[i] for i in range(start, start + number_per_group)]
         for start in range(0, len(string_list), number_per_group)
     ]
 
 
-def char_to_point(character):
+def char_to_point(character: str) -> int:
     number = ord(character)
     return number - 96 if number > 96 else number - 38
 

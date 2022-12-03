@@ -29,9 +29,13 @@ for player_1 in player_1_key:
     player_1_value = player_1_key[player_1]
     for player_2 in player_2_key:
         player_2_value = player_2_key[player_2]
-        results_round_1[f"{player_1} {player_2}"] = total_points(player_1_value, player_2_value)
+        results_round_1[f"{player_1} {player_2}"] = total_points(
+            player_1_value, player_2_value
+        )
         player_2_value = player_2_move_round_2(player_1_value, player_2_value)
-        results_round_2[f"{player_1} {player_2}"] = total_points(player_1_value, player_2_value)
+        results_round_2[f"{player_1} {player_2}"] = total_points(
+            player_1_value, player_2_value
+        )
 
 
 def func_from_dict(dictionary: dict, input: str):
