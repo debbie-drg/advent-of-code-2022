@@ -18,8 +18,7 @@ def group_elements(string_list: list[str], number_per_group: int) -> list[list[s
 
 def char_to_point(character: str) -> int:
     number = ord(character)
-    return number - 96 if number > 96 else number - 38
-
+    return (number - 38) % 58
 
 with open("input.txt") as f:
     input_data = f.read().split("\n")
