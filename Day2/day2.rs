@@ -1,6 +1,6 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
-use std::collections::HashMap;
 
 fn load_file(file_name: &str) -> String {
     let mut file = File::open(file_name).expect("File not found.");
@@ -21,7 +21,7 @@ fn modulo(input: i32, modulus: i32) -> i32 {
 }
 
 fn game_result(player_1: &i32, player_2: &i32) -> i32 {
-    return modulo(1 + player_2 - player_1 , 3);
+    return modulo(1 + player_2 - player_1, 3);
 }
 
 fn total_points(player_1: &i32, player_2: &i32) -> i32 {
@@ -41,7 +41,8 @@ fn compute_hashmaps() -> (HashMap<String, i32>, HashMap<String, i32>) {
         for index_player_2 in 0..player_2.len() {
             let index_1 = index_player_1 as i32;
             let index_2 = index_player_2 as i32;
-            let index_strings = format!("{} {}", player_1[index_player_1], player_2[index_player_2]).to_string();
+            let index_strings =
+                format!("{} {}", player_1[index_player_1], player_2[index_player_2]).to_string();
             let index_strings_copy = index_strings.clone();
             let result_round_1 = total_points(&index_1, &index_2);
             hashmap_1.insert(index_strings, result_round_1);
@@ -56,8 +57,14 @@ fn compute_hashmaps() -> (HashMap<String, i32>, HashMap<String, i32>) {
 fn main() {
     let (hashmap_round_1, hashmap_round_2) = compute_hashmaps();
     let data = load_file("input.txt");
-    let result_1 = data.split("\n").map(|item| hashmap_round_1[item]).sum::<i32>();
-    let result_2 = data.split("\n").map(|item| hashmap_round_2[item]).sum::<i32>();
+    let result_1 = data
+        .split("\n")
+        .map(|item| hashmap_round_1[item])
+        .sum::<i32>();
+    let result_2 = data
+        .split("\n")
+        .map(|item| hashmap_round_2[item])
+        .sum::<i32>();
     println!("The final score for Round 1 is {}", result_1);
     println!("The final score for Round 2 is {}", result_2);
 }
