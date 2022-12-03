@@ -10,10 +10,10 @@ fn load_file_split_strings(file_name: &str) -> String {
 
 fn main() {
     let data = load_file_split_strings("input.txt");
-    let mut calories: Vec<_> = data.split("\n\n").map(|element| element.lines().map(|item| item.parse::<u32>().unwrap()).sum::<u32>()).collect();
+    let mut calories: Vec<_> = data.split("\n\n").map(|element| element.lines().map(|item| item.parse::<i32>().unwrap()).sum::<i32>()).collect();
     calories.sort();
     calories.reverse();
     println!("Top: {}", calories[0]);
-    let biggest_three = calories[0..3].iter().sum::<u32>();
+    let biggest_three = calories[0..3].iter().sum::<i32>();
     println!("Top three: {}", biggest_three)
 }
