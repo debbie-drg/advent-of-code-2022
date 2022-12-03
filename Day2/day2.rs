@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::Read;
 use std::collections::HashMap;
 
-fn load_file_split_strings(file_name: &str) -> String {
+fn load_file(file_name: &str) -> String {
     let mut file = File::open(file_name).expect("File not found.");
     let mut data = String::new();
     file.read_to_string(&mut data).expect("File not found.");
@@ -55,7 +55,7 @@ fn compute_hashmaps() -> (HashMap<String, i32>, HashMap<String, i32>) {
 
 fn main() {
     let (hashmap_round_1, hashmap_round_2) = compute_hashmaps();
-    let data = load_file_split_strings("input.txt");
+    let data = load_file("input.txt");
     let result_1 = data.split("\n").map(|item| hashmap_round_1[item]).sum::<i32>();
     let result_2 = data.split("\n").map(|item| hashmap_round_2[item]).sum::<i32>();
     println!("The final score for Round 1 is {}", result_1);
