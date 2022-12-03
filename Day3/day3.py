@@ -17,10 +17,7 @@ def group_elements(string_list, number_per_group):
 
 
 def char_to_point(character):
-    try:
-        number = ord(character)
-    except TypeError:
-        return 0
+    number = ord(character)
     return number - 96 if number > 96 else number - 38
 
 
