@@ -22,13 +22,13 @@ def char_to_point(character: str) -> int:
     return (number - 38) % 58
 
 
-with open("input.txt") as f:
-    input_data = f.read().split("\n")
+if __name__ == "__main__":
+    input_data = open("input.txt").read().split("\n")
     input_data.remove("")
     repeated_1 = map(find_repeated, map(split_in_half, input_data))
     repeated_2 = map(find_repeated, group_elements(input_data, number_per_group=3))
     scores_1 = sum(map(char_to_point, repeated_1))
     scores_2 = sum(map(char_to_point, repeated_2))
 
-print(f"The score for part one is {scores_1}")
-print(f"The score for part one is {scores_2}")
+    print(f"The score for part one is {scores_1}")
+    print(f"The score for part one is {scores_2}")
