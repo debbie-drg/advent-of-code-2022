@@ -53,12 +53,12 @@ fn compute_hashmaps() -> (HashMap<String, i32>, HashMap<String, i32>) {
 fn main() {
     let (hashmap_round_1, hashmap_round_2) = compute_hashmaps();
     let data = load_file("input.txt");
-    let result_1 = data
-        .split("\n")
+    let data_lines = data.split("\n");
+    let result_1 = data_lines
+        .clone()
         .map(|item| hashmap_round_1[item])
         .sum::<i32>();
-    let result_2 = data
-        .split("\n")
+    let result_2 = data_lines
         .map(|item| hashmap_round_2[item])
         .sum::<i32>();
     println!("The final score for Round 1 is {}", result_1);
