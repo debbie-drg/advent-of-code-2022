@@ -15,7 +15,7 @@ def intervals_overlap(intervals: list[list[int]]) -> bool:
 
 def split_sections_into_intervals(string: str) -> list[list[int]]:
     return [
-        [int(number) for number in item.split("-")] for item in string.split(sep=",")
+        [int(number) for number in item.split("-")] for item in string.split(",")
     ]
 
 if __name__ == "__main__":
