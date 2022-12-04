@@ -1,3 +1,7 @@
+UPPERCASE_DIFF = 38
+LOWERCASE_DIFF = 58
+
+
 def find_repeated(strings: list[str]) -> str:
     for item in strings[0]:
         if all([item in strings[i] for i in range(1, len(strings))]):
@@ -19,7 +23,7 @@ def group_elements(string_list: list[str], number_per_group: int) -> list[list[s
 
 def char_to_point(character: str) -> int:
     number = ord(character)
-    return (number - 38) % 58
+    return (number - UPPERCASE_DIFF) % LOWERCASE_DIFF
 
 
 if __name__ == "__main__":
