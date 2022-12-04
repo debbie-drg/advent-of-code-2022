@@ -16,12 +16,8 @@ fn load_file(file_name: &str) -> String {
 // Then Draw if equal, Win if index for player 2 is one more than for player 1, Lose otherwise.
 // Using this we can easily compute the game result.
 
-fn modulo(input: i32, modulus: i32) -> i32 {
-    return ((input % modulus) + modulus) % modulus;
-}
-
 fn game_result(player_1: &i32, player_2: &i32) -> i32 {
-    return modulo(1 + player_2 - player_1, 3);
+    return (1 + player_2 - player_1).rem_euclid(3);
 }
 
 fn total_points(player_1: &i32, player_2: &i32) -> i32 {
@@ -29,7 +25,7 @@ fn total_points(player_1: &i32, player_2: &i32) -> i32 {
 }
 
 fn player_two_move_round_two(player_1: &i32, player_2: &i32) -> i32 {
-    return modulo(player_1 + player_2 - 1, 3);
+    return (player_1 + player_2 - 1).rem_euclid(3);
 }
 
 fn compute_hashmaps() -> (HashMap<String, i32>, HashMap<String, i32>) {
