@@ -24,18 +24,12 @@ def extract_moves(moves: str) -> list:
     return moves
 
 
-def move_9000(moves: list, stacks: dict):
+def move(moves: list, stacks: dict, reverse: bool = True):
     for move in moves:
         elements_to_move = stacks[move[1]][-move[0]:]
         del stacks[move[1]][-move[0]:]
-        elements_to_move.reverse()
-        stacks[move[2]] += elements_to_move
-
-
-def move_9001(moves: list, stacks: dict):
-    for move in moves:
-        elements_to_move = stacks[move[1]][-move[0]:]
-        del stacks[move[1]][-move[0]:]
+        if reverse:
+            elements_to_move.reverse()
         stacks[move[2]] += elements_to_move
 
 
@@ -51,8 +45,8 @@ if __name__ == "__main__":
     moves = extract_moves(moves)
     stacks_9000 = extract_stacks(cranes)
     stacks_9001 = deepcopy(stacks_9000)
-    move_9000(moves, stacks_9000)
-    move_9001(moves, stacks_9001)
+    move(moves, stacks_9000)
+    move(moves, stacks_9001, reverse=False)
 
     print(
         f"The elements at the top after moving with CrateMover 9000 are {print_top(stacks_9000)}"
