@@ -14,7 +14,7 @@ fn extract_moves_from_instructions(instructions: &str) -> Vec<(usize, usize, usi
     let mut destination: usize = 0;
 
     let mut moves = vec![];
-    
+
     for instruction in instructions.lines() {
         for (idx, part) in instruction.split(' ').enumerate() {
             match idx {
@@ -22,12 +22,12 @@ fn extract_moves_from_instructions(instructions: &str) -> Vec<(usize, usize, usi
                 1 => count = part.parse().unwrap(),
                 3 => source = part.parse().unwrap(),
                 5 => destination = part.parse().unwrap(),
-                _ => panic!("unexpected input: {:?}", instruction)
+                _ => panic!("unexpected input: {:?}", instruction),
             }
         }
         moves.push((count, source - 1, destination - 1))
     }
-    return moves
+    return moves;
 }
 
 fn extract_stacks(stacks_input: &str) -> Vec<Vec<char>> {
@@ -50,23 +50,25 @@ fn extract_stacks(stacks_input: &str) -> Vec<Vec<char>> {
     for stack in stacks.iter_mut() {
         stack.reverse();
     }
-    return stacks
+    return stacks;
 }
 
-fn perform_moves(instructions: &[(usize, usize, usize)], mut stacks: Vec<Vec<char>>, mode_9001: bool) -> Vec<Vec<char>> {
+fn perform_moves(
+    instructions: &[(usize, usize, usize)],
+    mut stacks: Vec<Vec<char>>,
+    mode_9001: bool,
+) -> Vec<Vec<char>> {
     for (count, source, destination) in instructions.iter().copied() {
-        let mut current_vector = vec![];
-        for _ in 0..count {
-            current_vector.push(stacks[source].pop().unwrap());
-        }
+        let split_point = stacks[source].len() - count;
+        let mut crates_to_move = stacks[source].split_off(split_point);
+
         if mode_9001 == true {
-            current_vector.reverse();
+            crates_to_move.reverse();
         }
 
-        stacks[destination].append(&mut current_vector);
-        
+        stacks[destination].append(&mut crates_to_move);
     }
-    return stacks
+    return stacks;
 }
 
 fn get_top_elements(stacks: &Vec<Vec<char>>) -> String {
@@ -74,7 +76,7 @@ fn get_top_elements(stacks: &Vec<Vec<char>>) -> String {
     for stack in stacks {
         answer.push(stack.last().unwrap().clone());
     }
-    return answer
+    return answer;
 }
 
 fn main() {
@@ -89,7 +91,13 @@ fn main() {
 
     let answer_part_1 = get_top_elements(&stacks_9000);
     let answer_part_2 = get_top_elements(&stacks_9001);
-    
-    println!("The elements at the top after moving with CrateMover 9000 are {}", answer_part_1);
-    println!("The elements at the top after moving with CrateMover 9001 are {}", answer_part_2);    
+
+    println!(
+        "The elements at the top after moving with CrateMover 9000 are {}",
+        answer_part_1
+    );
+    println!(
+        "The elements at the top after moving with CrateMover 9001 are {}",
+        answer_part_2
+    );
 }
