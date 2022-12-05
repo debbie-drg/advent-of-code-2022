@@ -62,7 +62,7 @@ fn perform_moves(
         let split_point = stacks[source].len() - count;
         let mut crates_to_move = stacks[source].split_off(split_point);
 
-        if mode_9001 == true {
+        if mode_9001 == false {
             crates_to_move.reverse();
         }
 
