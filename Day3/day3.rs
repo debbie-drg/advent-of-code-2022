@@ -36,8 +36,7 @@ fn main() {
             let (half_1, half_2) = line.split_at((line.len() / 2) as usize);
             let vector_1 = vector_from_string(half_1);
             let vector_2 = vector_from_string(half_2);
-            let intersection = vector_1.intersect(vector_2)[0];
-            return score_item(intersection);
+            return score_item(vector_1.intersect(vector_2)[0]);
         })
         .sum::<u32>();
     let score_2 = data_lines
@@ -46,10 +45,9 @@ fn main() {
         .map(|chunk| {
             let vector_1 = vector_from_string(chunk[0]);
             let vector_2 = vector_from_string(chunk[1]);
-            let mut intersection = vector_1.intersect(vector_2);
+            let intersection = vector_1.intersect(vector_2);
             let vector_3 = vector_from_string(chunk[2]);
-            intersection = intersection.intersect(vector_3);
-            return score_item(intersection[0]);
+            return score_item(intersection.intersect(vector_3)[0]);
         })
         .sum::<u32>();
     println!("The score for part one is {} ", score_1);
