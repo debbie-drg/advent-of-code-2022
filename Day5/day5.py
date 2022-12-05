@@ -26,10 +26,10 @@ def extract_moves(moves: str) -> list:
 
 def move_9000(moves: list, stacks: dict):
     for move in moves:
-        for _ in range(move[0]):
-            element_to_move = stacks[move[1]][-1]
-            del stacks[move[1]][-1]
-            stacks[move[2]].append(element_to_move)
+        elements_to_move = stacks[move[1]][-move[0]:]
+        del stacks[move[1]][-move[0]:]
+        elements_to_move.reverse()
+        stacks[move[2]] += elements_to_move
 
 
 def move_9001(moves: list, stacks: dict):
