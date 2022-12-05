@@ -26,8 +26,8 @@ def extract_moves(moves: str) -> list:
 
 def move(moves: list, stacks: dict, reverse: bool = True):
     for move in moves:
-        elements_to_move = stacks[move[1]][-move[0]:]
-        del stacks[move[1]][-move[0]:]
+        elements_to_move = stacks[move[1]][-move[0] :]
+        del stacks[move[1]][-move[0] :]
         if reverse:
             elements_to_move.reverse()
         stacks[move[2]] += elements_to_move
