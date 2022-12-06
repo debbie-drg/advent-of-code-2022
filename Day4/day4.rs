@@ -30,14 +30,14 @@ fn intervals_overlap(intervals: Vec<i32>) -> bool {
 
 fn main() {
     let data = get_data();
-    let interal_extremes = data.split("\n").map(|item| parse_interval_extremes(item));
-    let result_1 = interal_extremes
+    let interval_extremes = data.split("\n").map(|item| parse_interval_extremes(item));
+    let result_1 = interval_extremes
         .clone()
         .map(|vector| intervals_contained(vector))
         .into_iter()
         .filter(|b| *b)
         .count();
-    let result_2 = interal_extremes
+    let result_2 = interval_extremes
         .map(|vector| intervals_overlap(vector))
         .into_iter()
         .filter(|b| *b)
