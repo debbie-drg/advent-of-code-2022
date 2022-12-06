@@ -1,7 +1,7 @@
 import sys
 import time
 
-FIRST = ord("a")
+VALUE_A = ord("a")
 
 
 def detect_first_marker_old(datastream: str, lenth_of_indicator: int = 4) -> int:
@@ -19,17 +19,17 @@ def detect_first_marker(datastream: str, lenth_of_indicator: int = 4) -> int:
 
     # We populate for the first letters, up to the length of the indicator:
     for char in datastream[:lenth_of_indicator]:
-        current_ord = ord(char) - FIRST
+        current_ord = ord(char) - VALUE_A
         counts[current_ord] += 1
         if counts[current_ord] == 1:
             unique += 1
 
     for index in range(len(datastream) - lenth_of_indicator - 1):
-        leaving_ord = ord(datastream[index]) - FIRST
+        leaving_ord = ord(datastream[index]) - VALUE_A
         counts[leaving_ord] -= 1
         if counts[leaving_ord] == 0:
             unique -= 1
-        entering_ord = ord(datastream[index + lenth_of_indicator]) - FIRST
+        entering_ord = ord(datastream[index + lenth_of_indicator]) - VALUE_A
         counts[entering_ord] += 1
         if counts[entering_ord] == 1:
             unique += 1
