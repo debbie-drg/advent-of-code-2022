@@ -1,11 +1,40 @@
 import sys
+import time
+
+FIRST = ord("a")
 
 
-def detect_first_marker(datastream: str, lenth_of_indicator: int = 4) -> int:
+def detect_first_marker_old(datastream: str, lenth_of_indicator: int = 4) -> int:
     for index in range(len(datastream) - lenth_of_indicator):
         current_values = set(datastream[index : index + lenth_of_indicator])
         if len(current_values) == lenth_of_indicator:
             return index + lenth_of_indicator
+    return 0
+
+
+def detect_first_marker(datastream: str, lenth_of_indicator: int = 4) -> int:
+    # We take a sliding window perspective
+    counts = [0] * 26
+    unique = 0
+
+    # We populate for the first letters, up to the length of the indicator:
+    for char in datastream[:lenth_of_indicator]:
+        current_ord = ord(char) - FIRST
+        counts[current_ord] += 1
+        if counts[current_ord] == 1:
+            unique += 1
+
+    for index in range(len(datastream) - lenth_of_indicator - 1):
+        leaving_ord = ord(datastream[index]) - FIRST
+        counts[leaving_ord] -= 1
+        if counts[leaving_ord] == 0:
+            unique -= 1
+        entering_ord = ord(datastream[index + lenth_of_indicator]) - FIRST
+        counts[entering_ord] += 1
+        if counts[entering_ord] == 1:
+            unique += 1
+        if unique == lenth_of_indicator:
+            return index + lenth_of_indicator + 1
     return 0
 
 
