@@ -1,8 +1,9 @@
 extern crate array_tool;
 
+use array_tool::vec::Intersect;
+use std::env;
 use std::fs::File;
 use std::io::Read;
-use array_tool::vec::Intersect;
 
 const UPPERCASE_DIFF: u32 = 38;
 const LOWERCASE_DIFF: u32 = 58;
@@ -14,6 +15,15 @@ fn load_file(file_name: &str) -> String {
     return data.trim_end().to_string();
 }
 
+fn get_file_name_arg() -> String {
+    let input_args: Vec<String> = env::args().collect();
+    let mut file_name: String = "input.txt".to_string();
+    if input_args.len() > 1 {
+        file_name = input_args[1].clone();
+    }
+    return file_name;
+}
+
 fn score_item(item: &str) -> u32 {
     let scored_item = item.as_bytes()[0] as u32;
     return (scored_item - UPPERCASE_DIFF).rem_euclid(LOWERCASE_DIFF);
@@ -21,15 +31,15 @@ fn score_item(item: &str) -> u32 {
 
 fn vector_from_string(string_input: &str) -> Vec<&str> {
     return string_input
-    .split("")
-    .filter(|leter| !leter.is_empty())
-    .collect::<Vec<&str>>();
+        .split("")
+        .filter(|leter| !leter.is_empty())
+        .collect::<Vec<&str>>();
 }
 
 fn main() {
-    let data = load_file("input.txt");
-    let data_lines = data
-        .split("\n");
+    let file_name = get_file_name_arg();
+    let data = load_file(&file_name);
+    let data_lines = data.split("\n");
     let score_1 = data_lines
         .clone()
         .map(|line| {

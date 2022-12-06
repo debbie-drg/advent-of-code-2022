@@ -1,3 +1,4 @@
+use std::env;
 use std::fs::File;
 use std::io::Read;
 
@@ -6,6 +7,15 @@ fn load_file(file_name: &str) -> String {
     let mut data = String::new();
     file.read_to_string(&mut data).expect("File not found.");
     return data.trim_end().to_string();
+}
+
+fn get_file_name_arg() -> String {
+    let input_args: Vec<String> = env::args().collect();
+    let mut file_name: String = "input.txt".to_string();
+    if input_args.len() > 1 {
+        file_name = input_args[1].clone();
+    }
+    return file_name;
 }
 
 fn extract_moves_from_instructions(instructions: &str) -> Vec<(usize, usize, usize)> {
@@ -80,7 +90,8 @@ fn get_top_elements(stacks: &Vec<Vec<char>>) -> String {
 }
 
 fn main() {
-    let data = load_file("input.txt");
+    let file_name = get_file_name_arg();
+    let data = load_file(&file_name);
     let stacks_and_instructions: Vec<&str> = data.split("\n\n").collect();
     let mut stacks_9000 = extract_stacks(stacks_and_instructions[0]);
     let mut stacks_9001 = stacks_9000.clone();

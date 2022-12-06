@@ -1,3 +1,4 @@
+use std::env;
 use std::fs::File;
 use std::io::Read;
 
@@ -8,8 +9,18 @@ fn load_file_split_strings(file_name: &str) -> String {
     return data;
 }
 
+fn get_file_name_arg() -> String {
+    let input_args: Vec<String> = env::args().collect();
+    let mut file_name: String = "input.txt".to_string();
+    if input_args.len() > 1 {
+        file_name = input_args[1].clone();
+    }
+    return file_name;
+}
+
 fn main() {
-    let data = load_file_split_strings("input.txt");
+    let file_name = get_file_name_arg();
+    let data = load_file_split_strings(&file_name);
     let mut calories: Vec<_> = data
         .split("\n\n")
         .map(|element| {

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::env;
 use std::fs::File;
 use std::io::Read;
 
@@ -7,6 +8,15 @@ fn load_file(file_name: &str) -> String {
     let mut data = String::new();
     file.read_to_string(&mut data).expect("File not found.");
     return data.trim_end().to_string();
+}
+
+fn get_file_name_arg() -> String {
+    let input_args: Vec<String> = env::args().collect();
+    let mut file_name: String = "input.txt".to_string();
+    if input_args.len() > 1 {
+        file_name = input_args[1].clone();
+    }
+    return file_name;
 }
 
 // We codify the outcomes as follows:
@@ -51,16 +61,15 @@ fn compute_hashmaps() -> (HashMap<String, i32>, HashMap<String, i32>) {
 }
 
 fn main() {
+    let file_name = get_file_name_arg();
+    let data = load_file(&file_name);
     let (hashmap_round_1, hashmap_round_2) = compute_hashmaps();
-    let data = load_file("input.txt");
     let data_lines = data.split("\n");
     let result_1 = data_lines
         .clone()
         .map(|item| hashmap_round_1[item])
         .sum::<i32>();
-    let result_2 = data_lines
-        .map(|item| hashmap_round_2[item])
-        .sum::<i32>();
+    let result_2 = data_lines.map(|item| hashmap_round_2[item]).sum::<i32>();
     println!("The final score for Round 1 is {}", result_1);
     println!("The final score for Round 2 is {}", result_2);
 }
