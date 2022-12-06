@@ -1,3 +1,5 @@
+import sys
+
 UPPERCASE_DIFF = 38
 LOWERCASE_DIFF = 58
 
@@ -27,7 +29,11 @@ def char_to_point(character: str) -> int:
 
 
 if __name__ == "__main__":
-    input_data = open("input.txt").read().split("\n")
+    try:
+        file_name = sys.argv[1]
+    except IndexError:
+        file_name = "input.txt"    
+    input_data = open(file_name).read().split("\n")
     input_data.remove("")
     repeated_1 = map(find_repeated, map(split_in_half, input_data))
     repeated_2 = map(find_repeated, group_elements(input_data, number_per_group=3))

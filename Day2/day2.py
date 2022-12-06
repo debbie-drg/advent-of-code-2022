@@ -1,3 +1,5 @@
+import sys
+
 """
 We codify the outcomes as follows:
 - 0 for Rock
@@ -45,7 +47,11 @@ def func_from_dict(dictionary: dict, input: str):
 
 
 if __name__ == "__main__":
-    input_games = open("input.txt").read().split(sep="\n")
+    try:
+        file_name = sys.argv[1]
+    except IndexError:
+        file_name = "input.txt"      
+    input_games = open(file_name).read().split(sep="\n")
     input_games.remove("")
     results_round_1, results_round_2 = compute_score_dicts()
     score_round_1 = sum(map(lambda x: func_from_dict(results_round_1, x), input_games))

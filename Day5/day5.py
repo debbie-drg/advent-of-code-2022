@@ -1,5 +1,5 @@
 from copy import deepcopy
-
+import sys
 
 class Port:
     def __init__(self, cranes: str, mode_9001: bool = False):
@@ -60,7 +60,11 @@ def extract_moves(moves: str) -> list[list[int]]:
 
 
 if __name__ == "__main__":
-    cranes, moves = open("input.txt").read().split(sep="\n\n")
+    try:
+        file_name = sys.argv[1]
+    except IndexError:
+        file_name = "input.txt"
+    cranes, moves = open(file_name).read().split(sep="\n\n")
     moves = extract_moves(moves)
     stacks_9000 = Port(cranes)
     stacks_9001 = deepcopy(stacks_9000)
@@ -76,8 +80,8 @@ if __name__ == "__main__":
         f"The elements at the top after moving with CrateMover 9001 are {stacks_9001.print_top()}."
     )
 
-    print("\nThis is how things are once CrateMover 9000 is done.")
-    print(stacks_9000.represent_stack())
+    #print("\nThis is how things are once CrateMover 9000 is done.")
+    #print(stacks_9000.represent_stack())
 
-    print("\nThis is how things are once CrateMover 9001 is done.")
-    print(stacks_9001.represent_stack())
+    #print("\nThis is how things are once CrateMover 9001 is done.")
+    #print(stacks_9001.represent_stack())

@@ -1,5 +1,5 @@
 from itertools import tee
-
+import sys
 
 def intervals_contained(intervals: list[list[int]]) -> bool:
     return (intervals[0][0] - intervals[1][0]) * (
@@ -19,7 +19,11 @@ def split_sections_into_intervals(string: str) -> list[list[int]]:
     ]
 
 if __name__ == "__main__":
-    data = open("input.txt").read().split(sep="\n")
+    try:
+        file_name = sys.argv[1]
+    except IndexError:
+        file_name = "input.txt"
+    data = open(file_name).read().split(sep="\n")
     data.remove("")
     interval_extremes_1, interval_extremes_2 = tee(
         map(split_sections_into_intervals, data), 2
