@@ -1,22 +1,16 @@
 use std::cmp;
-use std::env;
-use std::fs::File;
-use std::io::Read;
 
-fn load_file(file_name: &str) -> String {
-    let mut file = File::open(file_name).expect("File not found.");
-    let mut data = String::new();
-    file.read_to_string(&mut data).expect("File not found.");
-    return data.trim_end().to_string();
-}
-
-fn get_file_name_arg() -> String {
-    let input_args: Vec<String> = env::args().collect();
+fn get_data() -> String {
+    let input_args: Vec<String> = std::env::args().collect();
     let mut file_name: String = "input.txt".to_string();
     if input_args.len() > 1 {
         file_name = input_args[1].clone();
     }
-    return file_name;
+    let mut data = std::fs::read_to_string(file_name).unwrap();
+    if data.ends_with("\n") {
+        data.pop();
+    }
+    return data;
 }
 
 fn parse_interval_extremes(input_line: &str) -> Vec<i32> {
@@ -35,8 +29,7 @@ fn intervals_overlap(intervals: Vec<i32>) -> bool {
 }
 
 fn main() {
-    let file_name = get_file_name_arg();
-    let data = load_file(&file_name);
+    let data = get_data();
     let interal_extremes = data.split("\n").map(|item| parse_interval_extremes(item));
     let result_1 = interal_extremes
         .clone()

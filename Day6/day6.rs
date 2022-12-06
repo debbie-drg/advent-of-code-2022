@@ -1,7 +1,5 @@
-use std::env;
-
 fn get_data() -> String {
-    let input_args: Vec<String> = env::args().collect();
+    let input_args: Vec<String> = std::env::args().collect();
     let mut file_name: String = "input.txt".to_string();
     if input_args.len() > 1 {
         file_name = input_args[1].clone();
