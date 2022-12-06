@@ -50,7 +50,28 @@ fn detect_first_marker(datastream: &str, length_of_indicator: usize) -> usize {
 
     // Now we update the amount of unique elements and counts by a sliding window.
 
-    bytesstream
+    let iterator_limit = bytesstream.len() - length_of_indicator - 1;
+
+    for index in 0..iterator_limit {
+        let leaving_character = (&bytesstream[index] - VALUE_A) as usize;
+        counts[leaving_character] -= 1;
+        if counts[leaving_character] == 0 {
+            unique -= 1;
+        }
+        let entering_character = (&bytesstream[index + length_of_indicator] - VALUE_A) as usize;
+        counts[entering_character] += 1;
+        if counts[entering_character] == 1 {
+            unique += 1;
+        }
+        if unique == length_of_indicator {
+            return index + length_of_indicator + 1;
+        }
+    }
+    
+    panic!("The start message does not exist.")
+
+    /* This is a more elegant approach to express this that I saw around.
+        bytesstream
         .windows(length_of_indicator + 1) // We add one to remove the leaving letter
         .enumerate()
         .find(|&(_index, window)| {
@@ -68,7 +89,7 @@ fn detect_first_marker(datastream: &str, length_of_indicator: usize) -> usize {
             unique == length_of_indicator
         })
         .map(|(index, _window)| index + length_of_indicator + 1)
-        .unwrap()
+        .unwrap() */
 }
 
 fn main() {
