@@ -14,9 +14,8 @@ fn get_data() -> String {
 fn get_left(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -> Vec<u8> {
     let mut left = vec![];
     for index in 0..column {
-        left.push(tree_heights[row][index].clone());
+        left.insert(0, tree_heights[row][index].clone());
     }
-    left.reverse();
     left
 }
 
@@ -32,9 +31,8 @@ fn get_right(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -> Vec<u8> 
 fn get_up(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -> Vec<u8> {
     let mut up = vec![];
     for index in 0..row {
-        up.push(tree_heights[index][column].clone());
+        up.insert(0, tree_heights[index][column].clone());
     }
-    up.reverse();
     up
 }
 
