@@ -9,9 +9,9 @@ def read_array(text_input: str) -> np.ndarray:
 
 
 def four_directions(trees: np.ndarray, row: int, column: int):
-    left = trees[row, :column]
+    left = np.flip(trees[row, :column])
     right = trees[row, column + 1 :]
-    up = trees[:row, column]
+    up = np.flip(trees[:row, column])
     down = trees[row + 1 :, column]
     return left, right, up, down
 
@@ -26,10 +26,8 @@ def get_visible(trees: np.ndarray) -> np.ndarray:
     return visible_filter
 
 
-def view_distance(tree_height: int, direction: np.ndarray, right_to_left: bool) -> int:
+def view_distance(tree_height: int, direction: np.ndarray) -> int:
     try:
-        if right_to_left:
-            direction = np.flip(direction)
         return np.where(tree_height <= direction)[0][0] + 1
     except IndexError:  # Will happen if no tree blocks the view
         return direction.shape[0]
@@ -37,10 +35,10 @@ def view_distance(tree_height: int, direction: np.ndarray, right_to_left: bool) 
 
 def scenic_score(height: int, left: np.ndarray, right: np.ndarray, up: np.ndarray, down: np.ndarray) -> int:
     score = 1
-    score *= view_distance(height, left, right_to_left=True)
-    score *= view_distance(height, right, right_to_left=False)
-    score *= view_distance(height, up, right_to_left=True)
-    score *= view_distance(height, down, right_to_left=False)
+    score *= view_distance(height, left)
+    score *= view_distance(height, right)
+    score *= view_distance(height, up)
+    score *= view_distance(height, down)
     return score
 
 
