@@ -1,6 +1,6 @@
 const MAX_SIZE: u32 = 100000;
 const TOTAL_SPACE: u32 = 70000000;
-const FREE_NEEDED: u32 = 30000000; 
+const FREE_NEEDED: u32 = 30000000;
 
 fn get_data() -> String {
     let input_args: Vec<String> = std::env::args().collect();
@@ -19,18 +19,18 @@ struct Folder {
     pub name: String,
     pub size: Option<u32>,
     pub file_size_contents: u32,
-    //pub files: Vec<String>,
+    pub files: Vec<String>,
     pub children: Vec<usize>,
     pub parent: Option<usize>,
 }
 
 impl Folder {
-    pub fn add_file(&mut self, file_size: u32) {
+    pub fn add_file(&mut self, file_size: u32, file_name: String) {
         self.file_size_contents += file_size;
         if !self.size.is_none() {
             self.size = Some(self.size.unwrap() + file_size);
         }
-        //self.files.push(file_name);
+        self.files.push(file_name);
     }
 
     pub fn add_child(&mut self, child: usize) {
@@ -53,7 +53,7 @@ impl FileSystem {
             size: Some(0),
             children: vec![],
             parent: Some(parent),
-            //files: vec![],
+            files: vec![],
             file_size_contents: 0,
         });
 
@@ -113,7 +113,8 @@ pub fn parse_command(line: &str, current_folder: usize, file_system: &mut FileSy
         return current_folder;
     }
     if split_line[0] != "dir" {
-        file_system.folders[current_folder].add_file(split_line[0].parse::<u32>().unwrap())
+        file_system.folders[current_folder]
+            .add_file(split_line[0].parse::<u32>().unwrap(), split_line[1].to_string())
     }
     current_folder
 }
@@ -137,10 +138,7 @@ fn main() {
 
     let folder_sizes = file_system.return_all_sizes();
 
-    let result_part_1: u32 = folder_sizes
-        .iter()
-        .filter(|size| size < &&MAX_SIZE)
-        .sum();
+    let result_part_1: u32 = folder_sizes.iter().filter(|size| size < &&MAX_SIZE).sum();
 
     // The total used space is the size of the root folder, which is at 0
     let need_to_free = FREE_NEEDED - (TOTAL_SPACE - folder_sizes[0]);
@@ -152,7 +150,9 @@ fn main() {
         .min()
         .unwrap();
 
-    println!("The total size of the folders of less than {} is {}.", MAX_SIZE, result_part_1);
+    println!(
+        "The total size of the folders of less than {} is {}.",
+        MAX_SIZE, result_part_1
+    );
     println!("The size of the directory to delete is {}.", result_part_2)
-
 }
