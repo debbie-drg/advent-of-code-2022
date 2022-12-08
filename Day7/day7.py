@@ -145,7 +145,7 @@ def sum_folder_size_at_most(folder_sizes: list[int], max_size: int = 100000):
     return sum(filter(lambda x: x < max_size, folder_sizes))
 
 
-def folder_to_delete(
+def size_of_folder_to_delete(
     folder_sizes: list[int], total_used: int, total_size: int, free_size_needed: int
 ):
     need_to_free = free_size_needed - (total_size - total_used)
@@ -175,7 +175,7 @@ if __name__ == "__main__":
     folder_sizes = file_system.get_folder_sizes()
 
     folders_less_than_100000 = sum_folder_size_at_most(folder_sizes, max_size=100000)
-    smallest_directory_to_remove = folder_to_delete(
+    smallest_directory_to_remove = size_of_folder_to_delete(
         folder_sizes,
         total_used=file_system.total_space_used(),
         total_size=TOTAL_SPACE,
