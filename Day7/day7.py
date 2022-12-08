@@ -38,12 +38,22 @@ class Folder:
     def get_subfolder_names(self) -> list[str]:
         return [children.name for children in self.children]
 
-    def get_subfolder(self, name: str):
+    def get_subfolder(self, name: str | list[str]):
+        if isinstance(name, list):
+            if len(name) > 1:
+                next_child = name[0]
+                for child in self.children:
+                    if child.name == next_child:
+                        return child.get_subfolder(name[1:])
+                print("Folder does not exist.")
+                return None
+            else:
+                name = name[0]
         for child in self.children:
             if child.name == name:
                 return child
         print("Folder does not exist.")
-        return self
+        return None
 
     def get_sizes(self):
         sizes = [self.compute_size()]
@@ -96,6 +106,11 @@ class FileSystem:
 
     def total_space_used(self) -> int:
         return self.root.compute_size()
+
+    def get_folder(self, path: str) -> Folder:
+        path = path.removeprefix("/")
+        split_path = path.split("/")
+        return self.root.get_subfolder(split_path)
 
 
 def parse_command(line: str, current_folder: Folder) -> Folder:
