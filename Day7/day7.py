@@ -14,7 +14,7 @@ class Folder:
 
     def __repr__(self) -> str:
         return (
-            f"Folder {self.name} at {self.get_location()} of size {self.compute_size()}"
+            f"Folder {self.get_location()} of size {self.compute_size()}"
         )
 
     def get_location(self) -> str:
