@@ -54,13 +54,13 @@ fn all_directions(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -> Vec
     all_dirs
 }
 
-fn view_distance(tree_height: u8, direction: &Vec<u8>) -> u32 {
+fn view_distance(tree_height: &u8, direction: &Vec<u8>) -> (u32, bool) {
     for index in 0..direction.len() {
-        if tree_height <= direction[index] {
-            return (index + 1) as u32;
+        if tree_height <= &direction[index] {
+            return ((index + 1) as u32, false);
         }
     }
-    return direction.len() as u32;
+    return (direction.len() as u32, tree_height > &direction[&direction.len() - 1]);
 }
 
 fn view_distances_and_scenic_scores(tree_heights: &Vec<Vec<u8>>) -> (Vec<Vec<bool>>, Vec<Vec<u32>>) {
@@ -70,24 +70,25 @@ fn view_distances_and_scenic_scores(tree_heights: &Vec<Vec<u8>>) -> (Vec<Vec<boo
     let number_cols = tree_heights[0].len();
     visible_filter.push(vec![true; number_cols]);
     for row in 1..number_rows - 1 {
-        visible_filter.push(vec![true; number_cols]);
+        visible_filter.push(vec![true]);
         scenic_scores.push(vec![]);
         for column in 1..number_cols - 1 {
             let four_directions = all_directions(&tree_heights, row, column);
-            let min_around = *four_directions
-                .iter()
-                .map(|direction| direction.iter().max().unwrap())
-                .min()
-                .unwrap();
-            visible_filter[row][column] = tree_heights[row][column] > min_around;
-
-            let tree_height = tree_heights[row][column].clone();
-            let scenic_score = four_directions
-            .iter()
-            .map(|direction| view_distance(tree_height, direction))
-            .product();
+            let mut scenic_score: u32 = 1;
+            let mut _scenic_score: u32;
+            let mut visible: bool = false;
+            let mut _visible: bool;
+            for direction in four_directions.iter() {
+                (_scenic_score, _visible) = view_distance(&tree_heights[row][column], direction);
+                scenic_score *= _scenic_score;
+                if _visible == true {
+                    visible = true;
+                }
+            }
             scenic_scores[row - 1].push(scenic_score);
+            visible_filter[row].push(visible);
         }
+        visible_filter.push(vec![true]);
     }
     visible_filter.push(vec![true; number_cols]);
     (visible_filter, scenic_scores)
