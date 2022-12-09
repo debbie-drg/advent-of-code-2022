@@ -54,27 +54,6 @@ fn all_directions(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -> Vec
     all_dirs
 }
 
-fn get_visible(tree_heights: &Vec<Vec<u8>>) -> Vec<Vec<bool>> {
-    let mut visible_filter: Vec<Vec<bool>> = vec![];
-    let number_rows = tree_heights.len();
-    let number_cols = tree_heights[0].len();
-    let mut _min_around : u8 = 0;
-    visible_filter.push(vec![true; number_cols]);
-    for row in 1..number_rows - 1 {
-        visible_filter.push(vec![true; number_cols]);
-        for column in 1..number_cols - 1 {
-            _min_around = *all_directions(&tree_heights, row, column)
-                .iter()
-                .map(|direction| direction.iter().max().unwrap())
-                .min()
-                .unwrap();
-            visible_filter[row][column] = tree_heights[row][column] > _min_around;
-        }
-    }
-    visible_filter.push(vec![true; number_cols]);
-    visible_filter
-}
-
 fn view_distance(tree_height: u8, direction: &Vec<u8>) -> u32 {
     for index in 0..direction.len() {
         if tree_height <= direction[index] {
@@ -84,26 +63,36 @@ fn view_distance(tree_height: u8, direction: &Vec<u8>) -> u32 {
     return direction.len() as u32;
 }
 
-
-
-fn scenic_scores(tree_heights: &Vec<Vec<u8>>) -> Vec<Vec<u32>> {
+fn view_distances_and_scenic_scores(tree_heights: &Vec<Vec<u8>>) -> (Vec<Vec<bool>>, Vec<Vec<u32>>) {
+    let mut visible_filter: Vec<Vec<bool>> = vec![];
     let mut scenic_scores: Vec<Vec<u32>> = vec![];
     let number_rows = tree_heights.len();
     let number_cols = tree_heights[0].len();
-    let mut _scenic_score: u32 = 0;
+    let mut min_around;
+    let mut scenic_score;
     let mut tree_height;
-    for row in 1..number_rows - 1{
+    visible_filter.push(vec![true; number_cols]);
+    for row in 1..number_rows - 1 {
+        visible_filter.push(vec![true; number_cols]);
         scenic_scores.push(vec![]);
         for column in 1..number_cols - 1 {
-            tree_height = tree_heights[row][column].clone();
-            _scenic_score = all_directions(&tree_heights, row, column)
+            min_around = *all_directions(&tree_heights, row, column)
                 .iter()
-                .map(|direction| view_distance(tree_height, direction))
-                .product();
-            scenic_scores[row - 1].push(_scenic_score)
+                .map(|direction| direction.iter().max().unwrap())
+                .min()
+                .unwrap();
+            visible_filter[row][column] = tree_heights[row][column] > min_around;
+
+            tree_height = tree_heights[row][column].clone();
+            scenic_score = all_directions(&tree_heights, row, column)
+            .iter()
+            .map(|direction| view_distance(tree_height, direction))
+            .product();
+            scenic_scores[row - 1].push(scenic_score);
         }
     }
-    scenic_scores
+    visible_filter.push(vec![true; number_cols]);
+    (visible_filter, scenic_scores)
 }
 
 fn main() {
@@ -117,13 +106,13 @@ fn main() {
             .map(|c| c.to_digit(10).unwrap() as u8)
             .collect::<Vec<_>>());
     }
-
-    let visible_trees: u32 = get_visible(&tree_heights)
+    let (visible_filter, scenic_scores) = view_distances_and_scenic_scores(&tree_heights);
+    let visible_trees: u32 = visible_filter
         .into_iter()
         .map(|row| row.into_iter().filter(|entry| *entry).count() as u32)
         .sum();
     
-    let highest_scenic_score = scenic_scores(&tree_heights)
+    let highest_scenic_score = scenic_scores
         .into_iter()
         .map(|row| row.into_iter().max().unwrap())
         .max()
