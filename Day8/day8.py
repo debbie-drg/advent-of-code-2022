@@ -8,37 +8,77 @@ def read_array(text_input: str) -> np.ndarray:
     return np.array([list(row) for row in text_input_split], dtype=int)
 
 
-def four_directions(trees: np.ndarray, row: int, column: int) -> list[np.ndarray]:
-    left = np.flip(trees[row, :column])
-    right = trees[row, column + 1 :]
-    up = np.flip(trees[:row, column])
-    down = trees[row + 1 :, column]
-    return [left, right, up, down]
+def view_distance_left(
+    tree_heights: np.ndarray, row: int, column: int
+) -> tuple[int, bool]:
+    for index in range(column - 1, -1, -1):
+        if tree_heights[row, column] <= tree_heights[row, index]:
+            return column - index, False
+    return column, tree_heights[row, column] > tree_heights[row, 0]
 
 
-def view_distance(tree_height: int, direction: np.ndarray) -> tuple[int, bool]:
-    try:
-        return np.where(tree_height <= direction)[0][0] + 1, False
-    except IndexError:  # Will happen if no tree blocks the view
-        return direction.shape[0], tree_height > direction[-1]
+def view_distance_right(
+    tree_heights: np.ndarray, row: int, column: int
+) -> tuple[int, bool]:
+    for index in range(column + 1, tree_heights.shape[1]):
+        if tree_heights[row, column] <= tree_heights[row, index]:
+            return (index - column, False)
+    return (
+        tree_heights.shape[1] - column - 1,
+        tree_heights[row, column] > tree_heights[row, tree_heights.shape[1] - 1],
+    )
 
 
-def view_distances_and_scenic_scores(trees: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def view_distance_up(
+    tree_heights: np.ndarray, row: int, column: int
+) -> tuple[int, bool]:
+    for index in range(row - 1, -1, -1):
+        if tree_heights[row, column] <= tree_heights[index, column]:
+            return (row - index, False)
+    return (row, tree_heights[row, column] > tree_heights[0, column])
+
+
+def view_distance_down(
+    tree_heights: np.ndarray, row: int, column: int
+) -> tuple[int, bool]:
+    for index in range(row + 1, tree_heights.shape[0]):
+        if tree_heights[row, column] <= tree_heights[index, column]:
+            return (index - row, False)
+    return (
+        tree_heights.shape[0] - row - 1,
+        tree_heights[row, column] > tree_heights[tree_heights.shape[0] - 1, column],
+    )
+
+
+def view_distances_and_scenic_scores(
+    trees: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
     array_shape = trees.shape
     visible_filter = np.full(trees.shape, True)
     scores = np.empty((array_shape[0] - 2, array_shape[1] - 2), dtype=int)
     for row in range(1, array_shape[0] - 1):
         for column in range(1, array_shape[1] - 1):
-            score = 1
+            scenic_score = 1
             visible = False
-            directions = four_directions(trees, row, column)
-            for direction in directions:
-                this_score, this_visible = view_distance(trees[row, column], direction)
-                score *= this_score
-                if this_visible:
-                    visible = True
-            visible_filter[row, column] = visible          
-            scores[row - 1, column - 1] = score
+
+            this_score, this_visible = view_distance_left(trees, row, column)
+            scenic_score *= this_score
+            visible = visible or this_visible
+
+            this_score, this_visible = view_distance_right(trees, row, column)
+            scenic_score *= this_score
+            visible = visible or this_visible
+
+            this_score, this_visible = view_distance_up(trees, row, column)
+            scenic_score *= this_score
+            visible = visible or this_visible
+
+            this_score, this_visible = view_distance_down(trees, row, column)
+            scenic_score *= this_score
+            visible = visible or this_visible
+
+            visible_filter[row, column] = visible
+            scores[row - 1, column - 1] = scenic_score
     return visible_filter, scores
 
 

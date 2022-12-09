@@ -44,7 +44,7 @@ fn view_distance_down(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) ->
             return ((index - row) as u32, false);
         }
     }
-    return ((tree_heights[0].len() - row - 1) as u32, tree_heights[row][column] > tree_heights[tree_heights.len() - 1][column])
+    return ((tree_heights.len() - row - 1) as u32, tree_heights[row][column] > tree_heights[tree_heights.len() - 1][column])
 }
 
 fn view_distances_and_scenic_scores(tree_heights: &Vec<Vec<u8>>) -> (Vec<Vec<bool>>, Vec<Vec<u32>>) {
@@ -64,27 +64,19 @@ fn view_distances_and_scenic_scores(tree_heights: &Vec<Vec<u8>>) -> (Vec<Vec<boo
 
             (_scenic_score, _visible) = view_distance_left(&tree_heights, row, column);
             scenic_score *= _scenic_score;
-            if _visible == true {
-                visible = true;
-            }
+            visible = visible | _visible;
 
             (_scenic_score, _visible) = view_distance_right(&tree_heights, row, column);
             scenic_score *= _scenic_score;
-            if _visible == true {
-                visible = true;
-            }
+            visible = visible | _visible;
 
             (_scenic_score, _visible) = view_distance_up(&tree_heights, row, column);
             scenic_score *= _scenic_score;
-            if _visible == true {
-                visible = true;
-            }
+            visible = visible | _visible;
 
             (_scenic_score, _visible) = view_distance_down(&tree_heights, row, column);
             scenic_score *= _scenic_score;
-            if _visible == true {
-                visible = true;
-            }
+            visible = visible | _visible;
 
             scenic_scores[row - 1].push(scenic_score);
             visible_filter[row].push(visible);
@@ -119,5 +111,5 @@ fn main() {
         .unwrap();
 
     println!("The number of visible trees is {}.", visible_trees);
-    println!("The maximum scenic score is {}.", highest_scenic_score)
+    println!("The possible maximum scenic score is {}.", highest_scenic_score)
 }
