@@ -113,8 +113,10 @@ pub fn parse_command(line: &str, current_folder: usize, file_system: &mut FileSy
         return current_folder;
     }
     if split_line[0] != "dir" {
-        file_system.folders[current_folder]
-            .add_file(split_line[0].parse::<u32>().unwrap(), split_line[1].to_string())
+        file_system.folders[current_folder].add_file(
+            split_line[0].parse::<u32>().unwrap(),
+            split_line[1].to_string(),
+        )
     }
     current_folder
 }

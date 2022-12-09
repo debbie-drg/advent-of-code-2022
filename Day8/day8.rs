@@ -17,7 +17,10 @@ fn view_distance_left(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) ->
             return ((column - index) as u32, false);
         }
     }
-    return (column as u32, tree_heights[row][column] > tree_heights[row][0])
+    return (
+        column as u32,
+        tree_heights[row][column] > tree_heights[row][0],
+    );
 }
 
 fn view_distance_right(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -> (u32, bool) {
@@ -26,7 +29,10 @@ fn view_distance_right(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -
             return ((index - column) as u32, false);
         }
     }
-    return ((tree_heights[0].len() - column - 1) as u32, tree_heights[row][column] > tree_heights[row][tree_heights[0].len() - 1])
+    return (
+        (tree_heights[0].len() - column - 1) as u32,
+        tree_heights[row][column] > tree_heights[row][tree_heights[0].len() - 1],
+    );
 }
 
 fn view_distance_up(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -> (u32, bool) {
@@ -35,7 +41,10 @@ fn view_distance_up(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -> (
             return ((row - index) as u32, false);
         }
     }
-    return (row as u32, tree_heights[row][column] > tree_heights[0][column])
+    return (
+        row as u32,
+        tree_heights[row][column] > tree_heights[0][column],
+    );
 }
 
 fn view_distance_down(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) -> (u32, bool) {
@@ -44,10 +53,15 @@ fn view_distance_down(tree_heights: &Vec<Vec<u8>>, row: usize, column: usize) ->
             return ((index - row) as u32, false);
         }
     }
-    return ((tree_heights.len() - row - 1) as u32, tree_heights[row][column] > tree_heights[tree_heights.len() - 1][column])
+    return (
+        (tree_heights.len() - row - 1) as u32,
+        tree_heights[row][column] > tree_heights[tree_heights.len() - 1][column],
+    );
 }
 
-fn view_distances_and_scenic_scores(tree_heights: &Vec<Vec<u8>>) -> (Vec<Vec<bool>>, Vec<Vec<u32>>) {
+fn view_distances_and_scenic_scores(
+    tree_heights: &Vec<Vec<u8>>,
+) -> (Vec<Vec<bool>>, Vec<Vec<u32>>) {
     let mut visible_filter: Vec<Vec<bool>> = vec![];
     let mut scenic_scores: Vec<Vec<u32>> = vec![];
     let number_rows = tree_heights.len();
@@ -94,16 +108,17 @@ fn main() {
     for line in split_data {
         tree_heights.push(
             line.chars()
-            .filter(|c| !c.is_whitespace())
-            .map(|c| c.to_digit(10).unwrap() as u8)
-            .collect::<Vec<_>>());
+                .filter(|c| !c.is_whitespace())
+                .map(|c| c.to_digit(10).unwrap() as u8)
+                .collect::<Vec<_>>(),
+        );
     }
     let (visible_filter, scenic_scores) = view_distances_and_scenic_scores(&tree_heights);
     let visible_trees: u32 = visible_filter
         .into_iter()
         .map(|row| row.into_iter().filter(|entry| *entry).count() as u32)
         .sum();
-    
+
     let highest_scenic_score = scenic_scores
         .into_iter()
         .map(|row| row.into_iter().max().unwrap())
@@ -111,5 +126,8 @@ fn main() {
         .unwrap();
 
     println!("The number of visible trees is {}.", visible_trees);
-    println!("The possible maximum scenic score is {}.", highest_scenic_score)
+    println!(
+        "The possible maximum scenic score is {}.",
+        highest_scenic_score
+    )
 }

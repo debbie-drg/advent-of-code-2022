@@ -67,29 +67,29 @@ fn detect_first_marker(datastream: &str, length_of_indicator: usize) -> usize {
             return index + length_of_indicator + 1;
         }
     }
-    
+
     panic!("The start message does not exist.")
 
     /* This is a more elegant approach to express this that I saw around.
-        bytesstream
-        .windows(length_of_indicator + 1) // We add one to remove the leaving letter
-        .enumerate()
-        .find(|&(_index, window)| {
-            let character = (&window[0] - VALUE_A) as usize;
-            counts[character] -= 1;
-            if counts[character] == 0 {
-                unique -= 1;
-            }
-            let character = (&window[length_of_indicator] - VALUE_A) as usize;
-            counts[character] += 1;
-            if counts[character] == 1 {
-                unique += 1;
-            }
+    bytesstream
+    .windows(length_of_indicator + 1) // We add one to remove the leaving letter
+    .enumerate()
+    .find(|&(_index, window)| {
+        let character = (&window[0] - VALUE_A) as usize;
+        counts[character] -= 1;
+        if counts[character] == 0 {
+            unique -= 1;
+        }
+        let character = (&window[length_of_indicator] - VALUE_A) as usize;
+        counts[character] += 1;
+        if counts[character] == 1 {
+            unique += 1;
+        }
 
-            unique == length_of_indicator
-        })
-        .map(|(index, _window)| index + length_of_indicator + 1)
-        .unwrap() */
+        unique == length_of_indicator
+    })
+    .map(|(index, _window)| index + length_of_indicator + 1)
+    .unwrap() */
 }
 
 fn main() {
