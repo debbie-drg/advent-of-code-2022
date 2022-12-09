@@ -60,7 +60,7 @@ fn view_distance(tree_height: &u8, direction: &Vec<u8>) -> (u32, bool) {
             return ((index + 1) as u32, false);
         }
     }
-    return (direction.len() as u32, tree_height > &direction[&direction.len() - 1]);
+    return (direction.len() as u32, tree_height > &direction[direction.len() - 1]);
 }
 
 fn view_distances_and_scenic_scores(tree_heights: &Vec<Vec<u8>>) -> (Vec<Vec<bool>>, Vec<Vec<u32>>) {
