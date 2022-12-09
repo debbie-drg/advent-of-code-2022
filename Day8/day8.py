@@ -16,30 +16,11 @@ def four_directions(trees: np.ndarray, row: int, column: int) -> list[np.ndarray
     return [left, right, up, down]
 
 
-def get_visible(trees: np.ndarray) -> np.ndarray:
-    visible_filter = np.full(trees.shape, True)
-    array_shape = trees.shape
-    for row in range(1, array_shape[0] - 1):
-        for column in range(1, array_shape[1] - 1):
-            min_around = min(map(np.max, four_directions(trees, row, column)))
-            visible_filter[row, column] = trees[row, column] > min_around
-    return visible_filter
-
-
-def view_distance(tree_height: int, direction: np.ndarray) -> int:
+def view_distance(tree_height: int, direction: np.ndarray) -> tuple[int, bool]:
     try:
-        return np.where(tree_height <= direction)[0][0] + 1
+        return np.where(tree_height <= direction)[0][0] + 1, False
     except IndexError:  # Will happen if no tree blocks the view
-        return direction.shape[0]
-
-
-def scenic_score(height: int, directions: list[np.ndarray]) -> int:
-    score = 1
-    score *= view_distance(height, directions[0])
-    score *= view_distance(height, directions[1])
-    score *= view_distance(height, directions[2])
-    score *= view_distance(height, directions[3])
-    return score
+        return direction.shape[0], tree_height > direction[-1]
 
 
 def view_distances_and_scenic_scores(trees: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -48,10 +29,16 @@ def view_distances_and_scenic_scores(trees: np.ndarray) -> tuple[np.ndarray, np.
     scores = np.empty((array_shape[0] - 2, array_shape[1] - 2), dtype=int)
     for row in range(1, array_shape[0] - 1):
         for column in range(1, array_shape[1] - 1):
+            score = 1
+            visible = False
             directions = four_directions(trees, row, column)
-            min_around = min(map(np.max, directions))
-            visible_filter[row, column] = trees[row, column] > min_around            
-            scores[row - 1, column - 1] = scenic_score(trees[row, column], directions)
+            for direction in directions:
+                this_score, this_visible = view_distance(trees[row, column], direction)
+                score *= this_score
+                if this_visible:
+                    visible = True
+            visible_filter[row, column] = visible          
+            scores[row - 1, column - 1] = score
     return visible_filter, scores
 
 
