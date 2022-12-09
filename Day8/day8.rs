@@ -68,23 +68,21 @@ fn view_distances_and_scenic_scores(tree_heights: &Vec<Vec<u8>>) -> (Vec<Vec<boo
     let mut scenic_scores: Vec<Vec<u32>> = vec![];
     let number_rows = tree_heights.len();
     let number_cols = tree_heights[0].len();
-    let mut min_around;
-    let mut scenic_score;
-    let mut tree_height;
     visible_filter.push(vec![true; number_cols]);
     for row in 1..number_rows - 1 {
         visible_filter.push(vec![true; number_cols]);
         scenic_scores.push(vec![]);
         for column in 1..number_cols - 1 {
-            min_around = *all_directions(&tree_heights, row, column)
+            let four_directions = all_directions(&tree_heights, row, column);
+            let min_around = *four_directions
                 .iter()
                 .map(|direction| direction.iter().max().unwrap())
                 .min()
                 .unwrap();
             visible_filter[row][column] = tree_heights[row][column] > min_around;
 
-            tree_height = tree_heights[row][column].clone();
-            scenic_score = all_directions(&tree_heights, row, column)
+            let tree_height = tree_heights[row][column].clone();
+            let scenic_score = four_directions
             .iter()
             .map(|direction| view_distance(tree_height, direction))
             .product();
