@@ -1,23 +1,15 @@
 import sys
 
 
-def preprocess_instructions(instructions):
-    instructions = instructions.split("\n")
-    instructions.remove("")
-    instructions = [instruction.split(" ") for instruction in instructions]
-    parsed_instructions = []
-    for instruction in instructions:
-        new_instruction = (
-            [instruction[0], int(instruction[1])]
-            if len(instruction) == 2
-            else instruction
-        )
-        parsed_instructions.append(new_instruction)
+def preprocess_instructions(instructions: str) -> list[list[str]]:
+    split_instructions = instructions.split("\n")
+    split_instructions.remove("")
+    split_instructions = [instruction.split(" ") for instruction in split_instructions]
 
-    return parsed_instructions
+    return split_instructions
 
 
-def signal_strength_sum(instructions):
+def signal_strength_sum(instructions: list[list[str]]) ->  int:
     registry_x = 1
     strength_sum = 0
     cycle_count = 0
@@ -30,27 +22,23 @@ def signal_strength_sum(instructions):
             cycle_count += 1
             if cycle_count % 40 == 20:
                 strength_sum += cycle_count * registry_x
-            registry_x += instruction[1]
+            registry_x += int(instruction[1])
     return strength_sum
 
 
-def move_sprite(registry):
+def move_sprite(registry: int) -> list[int]:
     return [registry - 1, registry, registry + 1]
 
 
-def line_and_pixel(cycle_count):
-    return [cycle_count // 40, cycle_count % 40]
-
-
-def pixel(is_on: bool):
+def pixel(is_on: bool) -> str:
     return "#" if is_on else "."
 
 
-def check_new_line(cycle_count):
+def check_new_line(cycle_count: int) -> str:
     return "\n" if cycle_count % 40 == 0 else ""
 
 
-def render_display(instructions):
+def render_display(instructions: list[list[str]]) -> str:
     display = ""
     registry_x = 1
     cycle_count = 0
@@ -64,7 +52,7 @@ def render_display(instructions):
             display += check_new_line(cycle_count)
             display += pixel(cycle_count % 40 in sprite_positions)
             cycle_count += 1
-            registry_x += instruction[1]
+            registry_x += int(instruction[1])
             sprite_positions = move_sprite(registry_x)
     return display
 
