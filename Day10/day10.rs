@@ -1,3 +1,6 @@
+const FILLED_CHARACTER: &str = "██";
+const EMPTY_CHARACTER: &str = "░░";
+
 fn get_data() -> String {
     let input_args: Vec<String> = std::env::args().collect();
     let mut file_name: String = "input.txt".to_string();
@@ -19,12 +22,11 @@ fn check_sprite(cycle_count: &i32, registry: &i32) -> bool {
     return false
 }
 
-fn pixel(is_on: bool) -> char {
+fn pixel(is_on: bool) -> &'static str {
     if is_on {
-        return '#';
-    } else {
-        return  '.';
+        return FILLED_CHARACTER;
     }
+    return EMPTY_CHARACTER;
 }
 
 fn check_new_line(cycle_count: &i32) -> bool {
@@ -42,7 +44,7 @@ fn render_display(instructions: &Vec<&str>) -> (i32, String) {
         if check_new_line(&cycle_count) == true {
             display.push('\n');
         }
-        display.push(pixel(check_sprite(&cycle_count, &registry_x)));
+        display.push_str(&pixel(check_sprite(&cycle_count, &registry_x)));
         cycle_count += 1;
         if cycle_count.rem_euclid(40) == 20 {
             strength_sum += cycle_count * registry_x
@@ -51,7 +53,7 @@ fn render_display(instructions: &Vec<&str>) -> (i32, String) {
             if check_new_line(&cycle_count) == true {
                 display.push('\n');
             }
-            display.push(pixel(check_sprite(&cycle_count, &registry_x)));
+            display.push_str(&pixel(check_sprite(&cycle_count, &registry_x)));
             cycle_count += 1;
             if cycle_count.rem_euclid(40) == 20 {
                 strength_sum += cycle_count * registry_x
