@@ -19,11 +19,6 @@ fn add_to_vector(vector_1: &mut Vec<i32>, vector_2: &Vec<i32>) {
     vector_1[1] += vector_2[1];
 }
 
-fn substract_to_vector(vector_1: &mut Vec<i32>, vector_2: &Vec<i32>) {
-    vector_1[0] -= vector_2[0];
-    vector_1[1] -= vector_2[1];
-}
-
 fn vector_difference(vector_1: &Vec<i32>, vector_2: &Vec<i32>) -> Vec<i32> {
     let mut vector_diff = vector_1.clone();
     vector_diff[0] -= vector_2[0];
