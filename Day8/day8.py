@@ -24,7 +24,7 @@ def view_distance_right(
             return (index - column, False)
     return (
         len(tree_heights[0]) - column - 1,
-        tree_heights[row][column] > tree_heights[row][len(tree_heights[0]) - 1],
+        tree_heights[row][column] > tree_heights[row][-1],
     )
 
 
@@ -45,7 +45,7 @@ def view_distance_down(
             return (index - row, False)
     return (
         len(tree_heights) - row - 1,
-        tree_heights[row][column] > tree_heights[len(tree_heights) - 1][column],
+        tree_heights[row][column] > tree_heights[-1][column],
     )
 
 
