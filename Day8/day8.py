@@ -1,63 +1,64 @@
-import numpy as np
 import sys
 
 
-def read_array(text_input: str) -> np.ndarray:
+def read_array(text_input: str) -> list:
     text_input_split = text_input.split("\n")
     text_input_split.remove("")
-    return np.array([list(row) for row in text_input_split], dtype=int)
+    return [list(row) for row in text_input_split]
 
 
 def view_distance_left(
-    tree_heights: np.ndarray, row: int, column: int
+    tree_heights: list[list[int]], row: int, column: int
 ) -> tuple[int, bool]:
     for index in range(column - 1, -1, -1):
-        if tree_heights[row, column] <= tree_heights[row, index]:
+        if tree_heights[row][column] <= tree_heights[row][index]:
             return column - index, False
-    return column, tree_heights[row, column] > tree_heights[row, 0]
+    return column, tree_heights[row][column] > tree_heights[row][0]
 
 
 def view_distance_right(
-    tree_heights: np.ndarray, row: int, column: int
+    tree_heights: list[list[int]], row: int, column: int
 ) -> tuple[int, bool]:
-    for index in range(column + 1, tree_heights.shape[1]):
-        if tree_heights[row, column] <= tree_heights[row, index]:
+    for index in range(column + 1, len(tree_heights[0])):
+        if tree_heights[row][column] <= tree_heights[row][index]:
             return (index - column, False)
     return (
-        tree_heights.shape[1] - column - 1,
-        tree_heights[row, column] > tree_heights[row, tree_heights.shape[1] - 1],
+        len(tree_heights[0]) - column - 1,
+        tree_heights[row][column] > tree_heights[row][len(tree_heights[0]) - 1],
     )
 
 
 def view_distance_up(
-    tree_heights: np.ndarray, row: int, column: int
+    tree_heights: list[list[int]], row: int, column: int
 ) -> tuple[int, bool]:
     for index in range(row - 1, -1, -1):
-        if tree_heights[row, column] <= tree_heights[index, column]:
+        if tree_heights[row][column] <= tree_heights[index][column]:
             return (row - index, False)
-    return (row, tree_heights[row, column] > tree_heights[0, column])
+    return (row, tree_heights[row][column] > tree_heights[0][column])
 
 
 def view_distance_down(
-    tree_heights: np.ndarray, row: int, column: int
+    tree_heights: list[list[int]], row: int, column: int
 ) -> tuple[int, bool]:
-    for index in range(row + 1, tree_heights.shape[0]):
-        if tree_heights[row, column] <= tree_heights[index, column]:
+    for index in range(row + 1, len(tree_heights)):
+        if tree_heights[row][column] <= tree_heights[index][column]:
             return (index - row, False)
     return (
-        tree_heights.shape[0] - row - 1,
-        tree_heights[row, column] > tree_heights[tree_heights.shape[0] - 1, column],
+        len(tree_heights) - row - 1,
+        tree_heights[row][column] > tree_heights[len(tree_heights) - 1][column],
     )
 
 
 def view_distances_and_scenic_scores(
-    trees: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray]:
-    array_shape = trees.shape
-    visible_filter = np.full(trees.shape, True)
-    scores = np.empty((array_shape[0] - 2, array_shape[1] - 2), dtype=int)
-    for row in range(1, array_shape[0] - 1):
-        for column in range(1, array_shape[1] - 1):
+    trees: list[list[int]],
+) -> tuple[list[list[int]], list[list[int]]]:
+    number_rows, number_cols = len(trees), len(trees[0])
+    visible_filter = [number_cols * [True]]
+    scores = []
+    for row in range(1, number_rows - 1):
+        scores.append([])
+        visible_filter.append([True])
+        for column in range(1, number_cols):
             scenic_score = 1
             visible = False
 
@@ -77,8 +78,10 @@ def view_distances_and_scenic_scores(
             scenic_score *= this_score
             visible = visible or this_visible
 
-            visible_filter[row, column] = visible
-            scores[row - 1, column - 1] = scenic_score
+            visible_filter[row].append(visible)
+            scores[row - 1].append(scenic_score)
+        visible_filter[row].append(True)
+    visible_filter.append([True] * number_cols)
     return visible_filter, scores
 
 
@@ -90,10 +93,10 @@ if __name__ == "__main__":
     trees = read_array(open(file_name).read())
     visible_filter, scenic_scores = view_distances_and_scenic_scores(trees)
 
-    number_visible = np.sum(visible_filter)
+    number_visible = sum([sum(row) for row in visible_filter])
 
     print(f"The number of visible trees is {number_visible}.")
 
-    max_score = np.max(scenic_scores)
+    max_score = max([max(score) for score in scenic_scores])
 
     print(f"The possible maximum scenic score is {max_score}.")
