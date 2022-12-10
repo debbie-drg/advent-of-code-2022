@@ -14,23 +14,26 @@ fn get_data() -> String {
     return data;
 }
 
-fn add_vectors(vector_1: &Vec<i32>, vector_2: &Vec<i32>) -> Vec<i32> {
-    let mut sum_vector = vec![];
-    sum_vector.push(vector_1[0] + vector_2[0]);
-    sum_vector.push(vector_1[1] + vector_2[1]);
-    sum_vector
+fn add_to_vector(vector_1: &mut Vec<i32>, vector_2: &Vec<i32>) {
+    vector_1[0] += vector_2[0];
+    vector_1[1] += vector_2[1];
 }
 
-fn substract_vectors(vector_1: &Vec<i32>, vector_2: &Vec<i32>) -> Vec<i32> {
-    let mut sum_vector = vec![];
-    sum_vector.push(vector_1[0] - vector_2[0]);
-    sum_vector.push(vector_1[1] - vector_2[1]);
-    sum_vector
+fn substract_to_vector(vector_1: &mut Vec<i32>, vector_2: &Vec<i32>) {
+    vector_1[0] -= vector_2[0];
+    vector_1[1] -= vector_2[1];
+}
+
+fn vector_difference(vector_1: &Vec<i32>, vector_2: &Vec<i32>) -> Vec<i32> {
+    let mut vector_diff = vector_1.clone();
+    vector_diff[0] -= vector_2[0];
+    vector_diff[1] -= vector_2[1];
+    return vector_diff
 }
 
 fn grid_distance(head: &Vec<i32>, tail: &Vec<i32>) -> i32 {
-    return substract_vectors(head, tail)
-        .into_iter()
+    return vector_difference(head, tail)
+        .iter()
         .map(|element| element.abs())
         .max()
         .unwrap();
@@ -60,15 +63,13 @@ fn move_step(
     let move_kind = command[0];
     let move_amount = command[1].parse::<usize>().unwrap();
     for _ in 0..move_amount {
-        rope[0] = add_vectors(&rope[0], &move_correspondence[move_kind]);
+        add_to_vector(&mut rope[0], &move_correspondence[move_kind]);
         for index in 1..rope.len() {
             if grid_distance(&rope[index - 1], &rope[index]) <= 1 {
                 break;
             }
-            rope[index] = add_vectors(
-                &rope[index],
-                &make_ones(substract_vectors(&rope[index - 1], &rope[index])),
-            )
+            let ones_vector = make_ones(vector_difference(&rope[index - 1], &rope[index]));
+            add_to_vector(&mut rope[index], &ones_vector);
         }
         positions_visited.insert(rope[rope.len() - 1].clone());
     }
