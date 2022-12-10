@@ -1,5 +1,7 @@
 import sys
 
+FILLED_CHARACTER = "██"
+EMPTY_CHARACTER = "░░"
 
 def preprocess_instructions(instructions: str) -> list[list[str]]:
     split_instructions = instructions.split("\n")
@@ -14,7 +16,7 @@ def move_sprite(registry: int) -> list[int]:
 
 
 def pixel(is_on: bool) -> str:
-    return "#" if is_on else "."
+    return FILLED_CHARACTER if is_on else EMPTY_CHARACTER
 
 
 def check_new_line(cycle_count: int) -> str:
