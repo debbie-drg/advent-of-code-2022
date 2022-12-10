@@ -9,23 +9,6 @@ def preprocess_instructions(instructions: str) -> list[list[str]]:
     return split_instructions
 
 
-def signal_strength_sum(instructions: list[list[str]]) ->  int:
-    registry_x = 1
-    strength_sum = 0
-    cycle_count = 0
-
-    for instruction in instructions:
-        cycle_count += 1
-        if cycle_count % 40 == 20:
-            strength_sum += cycle_count * registry_x
-        if len(instruction) == 2:
-            cycle_count += 1
-            if cycle_count % 40 == 20:
-                strength_sum += cycle_count * registry_x
-            registry_x += int(instruction[1])
-    return strength_sum
-
-
 def move_sprite(registry: int) -> list[int]:
     return [registry - 1, registry, registry + 1]
 
@@ -41,6 +24,7 @@ def check_new_line(cycle_count: int) -> str:
 def render_display(instructions: list[list[str]]) -> str:
     display = ""
     registry_x = 1
+    strength_sum = 0
     cycle_count = 0
     sprite_positions = [0, 1, 2]
 
@@ -48,13 +32,17 @@ def render_display(instructions: list[list[str]]) -> str:
         display += check_new_line(cycle_count)
         display += pixel(cycle_count % 40 in sprite_positions)
         cycle_count += 1
+        if cycle_count % 40 == 20:
+            strength_sum += cycle_count * registry_x
         if len(instruction) == 2:
             display += check_new_line(cycle_count)
             display += pixel(cycle_count % 40 in sprite_positions)
             cycle_count += 1
+            if cycle_count % 40 == 20:
+                strength_sum += cycle_count * registry_x
             registry_x += int(instruction[1])
             sprite_positions = move_sprite(registry_x)
-    return display
+    return strength_sum, display
 
 
 if __name__ == "__main__":
@@ -65,8 +53,8 @@ if __name__ == "__main__":
 
     parsed_instructions = preprocess_instructions(open(file_name).read())
 
-    strenth_sum = signal_strength_sum(parsed_instructions)
+    strenth_sum, display = render_display(parsed_instructions)
     print(f"The sum of signal strengths is {strenth_sum}.")
 
     print(f"\nHere's what the display looks like.")
-    print(render_display(parsed_instructions))
+    print(display)
