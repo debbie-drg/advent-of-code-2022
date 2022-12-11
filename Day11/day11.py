@@ -18,40 +18,43 @@ class Monkey:
             self.worry_operation_value = int(split_commands[2][-1])
         except ValueError:
             self.worry_operation_value = 0
-            self.self_referencing_operation = True
         self.monkey_if_true = int(split_commands[4][-1])
         self.monkey_if_false = int(split_commands[5][-1])
 
-    def monkey_operation(self, worry_value: int) -> int:
-        if self.self_referencing_operation:
-            self.worry_operation_value = worry_value
-        match self.worry_operation_marker:
-            case "*":
-                worry_value = worry_value * self.worry_operation_value % self.global_modulo
-            case "+":
-                worry_value = worry_value + self.worry_operation_value % self.global_modulo
-            case _:
-                raise AssertionError("Wrong operation marker")
+    def worry_level_update(self):
+        if self.worry_operation_value == 0:
+            self.holding_items = [
+                (item * item) % self.global_modulo for item in self.holding_items
+            ]
+        else:
+            match self.worry_operation_marker:
+                case "*":
+                    self.holding_items = [
+                        (item * self.worry_operation_value) % self.global_modulo
+                        for item in self.holding_items
+                    ]
+                case "+":
+                    self.holding_items = [
+                        (item + self.worry_operation_value) % self.global_modulo
+                        for item in self.holding_items
+                    ]
+                case _:
+                    raise AssertionError("Wrong operation marker")
         if self.divide_worry:
-            worry_value = worry_value // 3
-        return worry_value
-
-    def update_worry_levels(self):
-        self.holding_items = list(map(self.monkey_operation, self.holding_items))
+            self.holding_items = [item // 3 for item in self.holding_items]
         self.items_inspected += len(self.holding_items)
 
-    def worry_test(self, worry_level: int) -> bool:
-        return worry_level % self.test_modulo == 0
+    def worry_test(self) -> list[bool]:
+        return [worry_level % self.test_modulo == 0 for worry_level in self.holding_items]
 
     def monkey_to_throw(self, test_value: bool) -> int:
         return self.monkey_if_true if test_value else self.monkey_if_false
 
     def throw_at_monkeys(self) -> list[int]:
-        test_values = map(self.worry_test, self.holding_items)
-        return list(map(self.monkey_to_throw, test_values))
+        return [self.monkey_to_throw(test) for test in self.worry_test()]
 
     def monkey_keep_away_round(self) -> list[int]:
-        self.update_worry_levels()
+        self.worry_level_update()
         return self.throw_at_monkeys()
 
     def monkey_end_round(self):
@@ -67,7 +70,6 @@ class KeepAway:
             global_modulo *= self.monkeys[-1].test_modulo
         for monkey in self.monkeys:
             monkey.global_modulo = global_modulo
-
 
     def keep_away_round(self):
         for monkey in self.monkeys:
