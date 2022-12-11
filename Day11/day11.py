@@ -13,7 +13,6 @@ class Monkey:
         self.divide_worry = divide_worry
         self.items_inspected = 0
         self.worry_operation_marker = split_commands[2][-2]
-        self.self_referencing_operation = False
         try:
             self.worry_operation_value = int(split_commands[2][-1])
         except ValueError:
