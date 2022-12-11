@@ -27,14 +27,14 @@ class Monkey:
             self.worry_operation_value = worry_value
         match self.worry_operation_marker:
             case "*":
-                worry_value = worry_value * self.worry_operation_value
+                worry_value = worry_value * self.worry_operation_value % self.global_modulo
             case "+":
-                worry_value = worry_value + self.worry_operation_value
+                worry_value = worry_value + self.worry_operation_value % self.global_modulo
             case _:
                 raise AssertionError("Wrong operation marker")
         if self.divide_worry:
             worry_value = worry_value // 3
-        return worry_value % self.global_modulo
+        return worry_value
 
     def update_worry_levels(self):
         self.holding_items = list(map(self.monkey_operation, self.holding_items))
