@@ -43,21 +43,8 @@ class Monkey:
             self.holding_items = [item // 3 for item in self.holding_items]
         self.items_inspected += len(self.holding_items)
 
-    def worry_test(self) -> list[bool]:
-        return [worry_level % self.test_modulo == 0 for worry_level in self.holding_items]
-
-    def monkey_to_throw(self, test_value: bool) -> int:
+    def monkey_to_pass(self, test_value: bool) -> int:
         return self.monkey_if_true if test_value else self.monkey_if_false
-
-    def throw_at_monkeys(self) -> list[int]:
-        return [self.monkey_to_throw(test) for test in self.worry_test()]
-
-    def monkey_keep_away_round(self) -> list[int]:
-        self.worry_level_update()
-        return self.throw_at_monkeys()
-
-    def monkey_end_round(self):
-        self.holding_items = []
 
 
 class KeepAway:
@@ -72,10 +59,11 @@ class KeepAway:
 
     def keep_away_round(self):
         for monkey in self.monkeys:
-            monkeys_to_throw = monkey.monkey_keep_away_round()
-            for item, destination_monkey in zip(monkey.holding_items, monkeys_to_throw):
-                self.monkeys[destination_monkey].holding_items.append(item)
-            monkey.monkey_end_round()
+            monkey.worry_level_update()
+            for _ in range(len(monkey.holding_items)):
+                current_item = monkey.holding_items.pop()
+                destination_monkey = monkey.monkey_to_pass(current_item)
+                self.monkeys[destination_monkey].holding_items.append(current_item)
 
     def play_multiple_rounds(self, number_rounds: int):
         for _ in range(number_rounds):
