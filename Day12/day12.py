@@ -55,6 +55,7 @@ class Terrain:
         global ALTITUDE_DICT
         split_map = elevation_map.split("\n")
         split_map.remove("")
+        self.distances_computed = False
         self.number_rows = len(split_map)
         self.number_cols = len(split_map[0])
         elevation_map = elevation_map.replace("\n", "")
@@ -75,14 +76,14 @@ class Terrain:
             )
 
     def compute_distances(self):
+        self.distances_computed = True
         unvisited = list(range(len(self.positions)))
         current_position = self.end
         max_distance = self.positions[self.start].distance_to_end
         while unvisited != []:
             if current_position == self.start:
                 break
-            current_distance = self.positions[current_position].distance_to_end
-            tentative_distance = current_distance + 1
+            tentative_distance = self.positions[current_position].distance_to_end + 1
             for neighbour in [
                 neighbour
                 for neighbour in self.positions[current_position].neighbours
@@ -98,10 +99,13 @@ class Terrain:
                     min_unvisited_distance = self.positions[position].distance_to_end
 
     def distance(self):
-        self.compute_distances()
+        if not self.distances_computed:
+            self.compute_distances()
         return self.positions[self.start].distance_to_end
 
     def min_distance_from_bottom(self) -> int:
+        if not self.distances_computed:
+            self.compute_distances()
         distance = self.number_rows * self.number_cols
         for position in self.positions:
             if position.altitude == 0:
