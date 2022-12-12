@@ -29,7 +29,7 @@ impl Monkey {
             self.holding_items = self
                 .holding_items
                 .iter()
-                .map(|element| (element * element).rem_euclid(self.global_modulo))
+                .map(|element| element * element)
                 .collect();
         } else {
             match self.worry_operation_marker {
@@ -38,7 +38,7 @@ impl Monkey {
                         .holding_items
                         .iter()
                         .map(|element| {
-                            (element * self.worry_operation_value).rem_euclid(self.global_modulo)
+                            element * self.worry_operation_value
                         })
                         .collect()
                 }
@@ -47,7 +47,7 @@ impl Monkey {
                         .holding_items
                         .iter()
                         .map(|element| {
-                            (element + self.worry_operation_value).rem_euclid(self.global_modulo)
+                            element + self.worry_operation_value
                         })
                         .collect()
                 }
@@ -59,6 +59,12 @@ impl Monkey {
                 .holding_items
                 .iter()
                 .map(|element| element / 3)
+                .collect();
+        } else {
+            self.holding_items = self
+                .holding_items
+                .iter()
+                .map(|element| element.rem_euclid(self.global_modulo))
                 .collect();
         }
         self.items_inspected += self.holding_items.len() as u64;
