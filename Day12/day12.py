@@ -1,5 +1,4 @@
 import sys
-from copy import copy
 
 ORD_MIN = ord("a")
 ORD_MAX = ord("z")
@@ -110,7 +109,6 @@ class Terrain:
         return distance
 
 
-
 class Position:
     def __init__(self, altitude: int, position: int, distance_to_end: int):
         self.altitude = altitude
@@ -131,4 +129,6 @@ if __name__ == "__main__":
     terrain_map = Terrain(elevation_map)
 
     print(f"The shortest path has length {terrain_map.distance()}.")
-    print(f"The closest point from the botton is at {terrain_map.min_distance_from_bottom()} steps from the end.")
+    print(
+        f"The closest point from the botton is at {terrain_map.min_distance_from_bottom()} steps from the end."
+    )
