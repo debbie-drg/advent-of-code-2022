@@ -16,7 +16,7 @@ fn get_data() -> String {
 }
 
 struct Folder {
-    pub name: String,
+    pub _name: String,
     pub size: Option<u32>,
     pub file_size_contents: u32,
     pub files: Vec<String>,
@@ -49,7 +49,7 @@ impl FileSystem {
 
         // We create the folder and add it to the struct
         self.folders.push(Folder {
-            name: name.to_string(),
+            _name: name.to_string(),
             size: Some(0),
             children: vec![],
             parent: Some(parent),
