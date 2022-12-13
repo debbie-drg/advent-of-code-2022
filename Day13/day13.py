@@ -67,30 +67,20 @@ def compare_sublists(list_1: list, list_2: list):
 
 
 def decoder_key(lists_to_sort):
-    lists_to_sort.append([[2]])
-    lists_to_sort.append([[6]])
-    lists_to_sort[0], lists_to_sort[1] = lists_to_sort[1], lists_to_sort[0]
-    for index in range(len(lists_to_sort) - 1):
-        if not compare_lists(lists_to_sort[index], lists_to_sort[index + 1]):
-            lists_to_sort[index + 1], lists_to_sort[index] = (
-                lists_to_sort[index],
-                lists_to_sort[index + 1],
-            )
-            for descending_index in range(index, 0, -1):
-                if not compare_lists(
-                    lists_to_sort[descending_index - 1], lists_to_sort[descending_index]
-                ):
-                    (
-                        lists_to_sort[descending_index - 1],
-                        lists_to_sort[descending_index],
-                    ) = (
-                        lists_to_sort[descending_index],
-                        lists_to_sort[descending_index - 1],
-                    )
-                else:
-                    break
+    start_packet = [[2]]
+    end_packet = [[6]]
 
-    return (lists_to_sort.index([[2]]) + 1) * (lists_to_sort.index([[6]]) + 1)
+    index_start = 1
+    index_end = 2
+
+    for packet in lists_to_sort:
+        if compare_lists(packet, start_packet):
+            index_start += 1
+            index_end += 1
+        elif compare_lists(packet, end_packet):
+            index_end += 1
+
+    return index_start * index_end
 
 
 if __name__ == "__main__":

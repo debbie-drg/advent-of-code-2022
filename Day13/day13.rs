@@ -35,18 +35,18 @@ fn decoder_key(packets: &Vec<Packet>) -> usize {
     let start_packet = parse_packet("[[2]]".as_bytes(), &mut 0);
     let end_packet = parse_packet("[[6]]".as_bytes(), &mut 0);
 
-    let mut idx_start = 1;
-    let mut idx_end = 2;
+    let mut index_start = 1;
+    let mut index_end = 2;
 
     packets.into_iter().for_each(|packet| {
         if packet <= &start_packet {
-            idx_start += 1;
-        }
-        if packet <= &end_packet {
-            idx_end += 1;
+            index_start += 1;
+            index_end += 1;
+        } else if packet <= &end_packet {
+            index_end += 1;
         }
     });
-    idx_start * idx_end
+    index_start * index_end
 }
 
 
