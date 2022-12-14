@@ -57,9 +57,8 @@ class Reservoir:
                 sand_position = (sand_position[0] + 1, sand_position[1] + 1)
             else:
                 self.add_sand(sand_position)
-                if sand_position == self.sand_source:
-                    return True
-                return False
+                return sand_position == self.sand_source
+
 
     def add_floor_line(self):
         for index in range(self.left, self.right + 1):
