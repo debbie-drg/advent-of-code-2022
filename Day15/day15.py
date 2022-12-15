@@ -6,7 +6,7 @@ def manhattan_distance(location_1, location_2):
 
 
 def line_intersection(line_1, line_2):
-    x = (line_2[1] - line_1[1])//(line_1[0] - line_2[0])
+    x = (line_2[1] - line_1[1]) // (line_1[0] - line_2[0])
     y = line_1[0] * x + line_1[1]
     return (x, y)
 
@@ -115,22 +115,6 @@ class Grid:
             return Interval([start_index, end_index])
         return Interval([])
 
-    """
-    def sensor_cover_area(self, sensor_index: int) -> set:
-        cover_area = Intervals([])
-        start_index = (
-            self.sensors[sensor_index].location[1]
-            - self.sensors[sensor_index].beacon_distance
-        )
-        end_index = (
-            self.sensors[sensor_index].location[1]
-            + self.sensors[sensor_index].beacon_distance
-        )
-        for row in range(start_index, end_index + 1):
-            cover_area = cover_area.union(self.row_cover_area(sensor_index, row))
-        return cover_area
-    """
-
     def number_positions_without_beacon_in_row(self, row: int):
         rows_without_beacon = Intervals([])
         beacons_in_row = set()
@@ -143,16 +127,24 @@ class Grid:
         return len(rows_without_beacon) - len(beacons_in_row)
 
     def check_location(self, location: tuple, min_index: int, max_index: int) -> bool:
-        return min_index < location[0] < max_index and min_index < location[1] < max_index 
+        return (
+            min_index < location[0] < max_index and min_index < location[1] < max_index
+        )
 
     def lines_from_extremes(self, beacon_index):
         location = self.sensors[beacon_index].location
-        top = (location[0] + self.sensors[beacon_index].beacon_distance + 1, location[1])
-        bottom = (location[0] - self.sensors[beacon_index].beacon_distance - 1, location[1])
+        top = (
+            location[0] + self.sensors[beacon_index].beacon_distance + 1,
+            location[1],
+        )
+        bottom = (
+            location[0] - self.sensors[beacon_index].beacon_distance - 1,
+            location[1],
+        )
         lines_pos = [(1, top[1] - top[0]), (1, bottom[1] - bottom[0])]
-        lines_neg = [(-1, top[1] + top[0]), (-1, bottom[1] + bottom[0])]        
+        lines_neg = [(-1, top[1] + top[0]), (-1, bottom[1] + bottom[0])]
         return lines_pos, lines_neg
-    
+
     def lines_intersection(self, beacon_1, beacon_2):
         points = []
         lines_pos_1, lines_neg_1 = self.lines_from_extremes(beacon_1)
@@ -170,42 +162,20 @@ class Grid:
         for index_1 in range(len(self.sensors) - 1):
             for index_2 in range(1, len(self.sensors)):
                 new_candidates = self.lines_intersection(index_1, index_2)
-                new_candidates = [candidate for candidate in new_candidates if self.check_location(candidate, min_range, max_range)]
+                new_candidates = [
+                    candidate
+                    for candidate in new_candidates
+                    if self.check_location(candidate, min_range, max_range)
+                ]
                 candidates = candidates.union(set(new_candidates))
         return candidates
 
-        
-        """
-        corners = []
-        x, y = self.sensors[sensor_index].location
-        distance = self.sensors[sensor_index].beacon_distance + 1
-        y = y + distance
-        while y != self.sensors[sensor_index].location[1]:
-            if self.check_location((x,y), min_range, max_range):
-                corners.append((x,y))
-            x += 1
-            y -= 1
-        while x != self.sensors[sensor_index].location[0]:
-            if self.check_location((x,y), min_range, max_range):
-                corners.append((x,y))
-            x -= 1
-            y -= 1
-        while y != self.sensors[sensor_index].location[1]:
-            if self.check_location((x,y), min_range, max_range):
-                corners.append((x,y))
-            x -= 1
-            y += 1
-        while x != self.sensors[sensor_index].location[0]:
-            if self.check_location((x,y), min_range, max_range):
-                corners.append((x,y))
-            x += 1
-            y += 1
-        return corners
-        """
-
     def check_if_beacon(self, candidate):
         for sensor_index in range(len(self.sensors)):
-            if manhattan_distance(candidate, self.sensors[sensor_index].location) <= self.sensors[sensor_index].beacon_distance:
+            if (
+                manhattan_distance(candidate, self.sensors[sensor_index].location)
+                <= self.sensors[sensor_index].beacon_distance
+            ):
                 return False
         else:
             return True
@@ -215,7 +185,6 @@ class Grid:
         for candidate in candidates:
             if self.check_if_beacon(candidate):
                 return candidate[0] * 4000000 + candidate[1]
-
 
 
 if __name__ == "__main__":
@@ -236,4 +205,6 @@ if __name__ == "__main__":
         print(
             f"In row 2000000, there are {sensors_grid.number_positions_without_beacon_in_row(2000000)} positions where the distress beacon can't be."
         )
-        print(f"The distress beacon frequency is {sensors_grid.find_beacon(min_range = 0, max_range = 4000000)}.")
+        print(
+            f"The distress beacon frequency is {sensors_grid.find_beacon(min_range = 0, max_range = 4000000)}."
+        )
