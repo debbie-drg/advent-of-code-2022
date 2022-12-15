@@ -6,7 +6,7 @@ def manhattan_distance(location_1, location_2):
 
 
 def line_intersection(line_1, line_2):
-    x = (line_2[1] - line_1[1]) // (line_1[0] - line_2[0])
+    x = (line_2[1] - line_1[1]) / (line_1[0] - line_2[0])
     y = line_1[0] * x + line_1[1]
     return (x, y)
 
@@ -151,10 +151,14 @@ class Grid:
         lines_pos_2, lines_neg_2 = self.lines_from_extremes(beacon_2)
         for line_1 in lines_pos_1:
             for line_2 in lines_neg_2:
-                points.append(line_intersection(line_1, line_2))
+                current_point = line_intersection(line_1, line_2)
+                if (current_point[0]==int(current_point[0]) and current_point[1] == int(current_point[1])):
+                    points.append((int(current_point[0]), int(current_point[1])))
         for line_1 in lines_neg_1:
             for line_2 in lines_pos_2:
-                points.append(line_intersection(line_1, line_2))
+                current_point = line_intersection(line_1, line_2)
+                if (current_point[0]==int(current_point[0]) and current_point[1] == int(current_point[1])):
+                    points.append((int(current_point[0]), int(current_point[1])))
         return points
 
     def candidate_distress_beacon(self, min_range: int, max_range: int) -> set:
