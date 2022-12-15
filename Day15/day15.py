@@ -69,12 +69,14 @@ class Intervals:
     def merge(self):
         self.intervals.sort(key=lambda x: x.extremes[0])
         while True:
+            checked_until = 0
             changed = False
-            for index in range(0, len(self.intervals) - 1):
+            for index in range(checked_until, len(self.intervals) - 1):
                 if self.intervals[index].intersects(self.intervals[index + 1]):
                     self.intervals[index].union(self.intervals[index + 1])
                     self.intervals.pop(index + 1)
                     changed = True
+                    checked_until = index
                     break
             if not changed:
                 break
