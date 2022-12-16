@@ -162,6 +162,7 @@ class CaveValves:
         self.next_move(
             time_limit, start_position, 0, 0, self.valves_open, [start_position]
         )
+        return self.best_score
 
     def gather_routes(self, time_limit):
         self.gathered_routes = dict()
@@ -200,9 +201,7 @@ if __name__ == "__main__":
     pipe_data = open(file_name).read().split("\n")
     valve_data = parse_data(pipe_data)
     cave_valves = CaveValves(valve_data)
-    cave_valves.pressure_release(30)
-    print(f"The most pressure you can release is {cave_valves.best_score}.")
-    cave_valves.gather_routes(26)
+    print(f"The most pressure you can release is {cave_valves.pressure_release(30)}.")
     print(
         f"With the help of the elephant, you can get to {cave_valves.pressure_release_with_helper(26)}."
     )
