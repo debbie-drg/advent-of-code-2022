@@ -1,4 +1,5 @@
 import sys
+from itertools import chain, combinations
 
 
 def parse_data(pipe_data: list[str]) -> list:
@@ -32,7 +33,7 @@ class CaveValves:
     def __init__(self, valve_data: list):
         self.valves = []
         self.number_valves = len(valve_data)
-        self.valves_open = [False] * self.number_valves
+        self.positive_flow = []
         self.distances_computed = [False] * self.number_valves
         self.distances = [
             [len(valve_data) + 1] * len(valve_data) for _ in range(len(valve_data))
@@ -43,8 +44,8 @@ class CaveValves:
         for index, valve in enumerate(valve_data):
             self.valves.append(Valve(capacity=valve[1]))
             self.indices_dict[valve[0]] = index
-            if valve[1] == 0:
-                self.valves_open[index] = True
+            if valve[1] != 0:
+                self.positive_flow.append(index)
         for index, valve in enumerate(valve_data):
             for neighbour in valve[2]:
                 self.distances[self.indices_dict[valve[0]]][
@@ -101,14 +102,11 @@ class CaveValves:
         current_position,
         current_score,
         current_score_per_minute,
-        valves_open,
+        candidates,
         path,
         gather_routes=False,
     ):
         self.compute_distances_from(current_position)
-        candidates = [
-            valve for valve in range(self.number_valves) if not self.valves_open[valve]
-        ]
         max_score = self.max_achievable_score(
             current_score, current_score_per_minute, time_left, candidates
         )
@@ -140,17 +138,19 @@ class CaveValves:
                 candidate_score_per_minute = (
                     current_score_per_minute + self.valves[candidate].capacity
                 )
-                valves_open[candidate] = True
                 self.next_move(
                     time_left - candidate_distance - 1,
                     candidate,
                     current_candidate_score,
                     candidate_score_per_minute,
-                    valves_open,
+                    [
+                        new_candidate
+                        for new_candidate in candidates
+                        if new_candidate != candidate
+                    ],
                     path + [candidate],
                     gather_routes,
                 )
-                valves_open[candidate] = False
         if not any_candidates and not gather_routes:
             current_score += current_score_per_minute * time_left
             self.best_score = max(self.best_score, current_score)
@@ -160,7 +160,7 @@ class CaveValves:
         start_position = self.indices_dict["AA"]
         self.best_score = 0
         self.next_move(
-            time_limit, start_position, 0, 0, self.valves_open, [start_position]
+            time_limit, start_position, 0, 0, self.positive_flow, [start_position]
         )
         return self.best_score
 
@@ -172,7 +172,7 @@ class CaveValves:
             start_position,
             0,
             0,
-            self.valves_open,
+            self.positive_flow,
             [],
             gather_routes=True,
         )
