@@ -174,6 +174,11 @@ class Grid:
                     if self.check_location(candidate, min_range, max_range)
                 ]
                 candidates = candidates.union(set(new_candidates))
+        # This approach doesn't cover the beacon being on the corners, so we add them.
+        candidates.add((min_range, min_range))
+        candidates.add((min_range, max_range))
+        candidates.add((max_range, min_range))
+        candidates.add((max_range, max_range))
         return candidates
 
     def check_if_beacon(self, candidate):
@@ -207,7 +212,7 @@ if __name__ == "__main__":
         print(
             f"The distress beacon frequency is {sensors_grid.find_beacon(min_range = 0, max_range=20)}."
         )
-    if file_name == "input.txt":
+    else:
         print(
             f"In row 2000000, there are {sensors_grid.number_positions_without_beacon_in_row(2000000)} positions where the distress beacon can't be."
         )
