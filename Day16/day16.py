@@ -112,12 +112,14 @@ class CaveValves:
         )
         match gather_routes:
             case True:
-                compare = self.best_score // 2
+                compare = self.best_score - self.best_partial
             case False:
                 compare = self.best_score
         if max_score < compare:
             return None
         if gather_routes:
+            partial_score = current_score + current_score_per_minute * time_left
+            self.best_partial = max(partial_score, self.best_partial)
             try:
                 self.gathered_routes[frozenset(path)] = max(
                     self.gathered_routes[frozenset(path)],
@@ -178,6 +180,9 @@ class CaveValves:
         )
 
     def pressure_release_with_helper(self, time_limit):
+        self.best_partial = 0
+        self.best_score = 0
+        self.pressure_release(time_limit)
         self.gather_routes(time_limit)
         max_score = 0
         routes = list(self.gathered_routes.keys())
