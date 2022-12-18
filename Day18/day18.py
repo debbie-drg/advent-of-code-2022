@@ -1,5 +1,6 @@
 import sys
-sys.setrecursionlimit(10000)
+
+sys.setrecursionlimit(8000)
 
 NEIGHBOURS = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
 
@@ -39,11 +40,16 @@ class Lava:
         return surface_area
 
     def outer_surface(self) -> int:
-        position = (-1,-1,-1)
+        position = (-1, -1, -1)
         surface, _ = self.flood_step(position, 0, [])
         return surface
 
-    def flood_step(self, position: tuple[int, int, int], surface: int, checked: list[tuple[int, int, int]]):
+    def flood_step(
+        self,
+        position: tuple[int, int, int],
+        surface: int,
+        checked: list[tuple[int, int, int]],
+    ):
         if position in checked:
             return surface, checked
         if position in self.cubes:
@@ -51,8 +57,14 @@ class Lava:
         checked.append(position)
         if any(element < -1 for element in list(position)):
             return surface, checked
-        if any([position[0] > self.max_x + 1, position[1] > self.max_y + 1, position[2] > self.max_z + 1]):
-            return surface , checked
+        if any(
+            [
+                position[0] > self.max_x + 1,
+                position[1] > self.max_y + 1,
+                position[2] > self.max_z + 1,
+            ]
+        ):
+            return surface, checked
         for neighbour in NEIGHBOURS:
             next_step = (
                 position[0] + neighbour[0],
@@ -61,6 +73,7 @@ class Lava:
             )
             surface, checked = self.flood_step(next_step, surface, checked)
         return surface, checked
+
 
 if __name__ == "__main__":
     try:
