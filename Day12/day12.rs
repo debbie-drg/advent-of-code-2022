@@ -66,7 +66,7 @@ fn check_neiboughrs(
 struct Position {
     altitude: u32,
     neighbours: Vec<usize>,
-    position: usize,
+    _position: usize,
     distance_to_end: u32,
 }
 
@@ -114,7 +114,7 @@ impl Terrain {
             self.positions.push(Position {
                 altitude: altitude,
                 neighbours: neighbours,
-                position: index,
+                _position: index,
                 distance_to_end: distance_to_end,
             });
         }
