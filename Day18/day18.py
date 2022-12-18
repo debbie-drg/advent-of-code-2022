@@ -14,7 +14,9 @@ class Lava:
         for cube in split_cubes:
             self.add_cube(cube)
         max_indices = (max(cube[i] for cube in self.cubes) for i in range(3))
+        min_indices = (min(cube[i] for cube in self.cubes) for i in range(3))
         self.max_x, self.max_y, self.max_z = max_indices
+        self.min_x, self.min_y, self.min_z = min_indices
 
     def add_cube(self, cube: str):
         split_cube = cube.split(",")
@@ -37,42 +39,47 @@ class Lava:
             surface_area -= self.number_neighbours(cube)
         return surface_area
 
-    def outer_surface(self) -> int:
-        position = (-1, -1, -1)
-        sys.setrecursionlimit(self.max_x * self.max_y * self.max_z)
-        surface, _ = self.flood_step(position, 0, [])
-        return surface
+    def out_of_bounds(self, position):
+        upper_check = any(
+            [
+                position[0] > self.max_x + 1,
+                position[1] > self.max_y + 1,
+                position[2] > self.max_z + 1,
+            ]
+        )
+        lower_check = any(
+            [
+                position[0] < self.min_x - 1,
+                position[1] < self.min_y - 1,
+                position[2] < self.min_z - 1,
+            ]
+        )
+        return upper_check or lower_check
 
-    def flood_step(
-        self,
-        position: tuple[int, int, int],
-        surface: int,
-        checked: list[tuple[int, int, int]],
-    ):
-        checked.append(position)
-        for neighbour in NEIGHBOURS:
-            next_step = (
-                position[0] + neighbour[0],
-                position[1] + neighbour[1],
-                position[2] + neighbour[2],
-            )
-            if (
-                any(
-                    [
-                        next_step[0] > self.max_x + 1,
-                        next_step[1] > self.max_y + 1,
-                        next_step[2] > self.max_z + 1,
-                    ]
+    def outer_surface(self) -> int:
+        checked = []
+        to_check = [(self.min_x - 1, self.min_y - 1, self.min_z - 1)]
+        surface = 0
+        while to_check != []:
+            position = to_check.pop()
+            if position in checked:
+                continue
+            for neighbour in NEIGHBOURS:
+                next_step = (
+                    position[0] + neighbour[0],
+                    position[1] + neighbour[1],
+                    position[2] + neighbour[2],
                 )
-                or any(element < -1 for element in list(next_step))
-                or next_step in checked
-            ):
-                continue
-            if next_step in self.cubes:
-                surface += 1
-                continue
-            surface, checked = self.flood_step(next_step, surface, checked)
-        return surface, checked
+                if self.out_of_bounds(next_step):
+                    continue
+                if next_step in checked:
+                    continue
+                if next_step in self.cubes:
+                    surface += 1
+                    continue
+                to_check.append(next_step)
+            checked.append(position)
+        return surface
 
 
 if __name__ == "__main__":
