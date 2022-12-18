@@ -57,13 +57,12 @@ class Lava:
         return upper_check or lower_check
 
     def outer_surface(self) -> int:
-        checked = []
-        to_check = [(self.min_x - 1, self.min_y - 1, self.min_z - 1)]
+        checked = set()
+        to_check = set()
+        to_check.add((self.min_x - 1, self.min_y - 1, self.min_z - 1))
         surface = 0
-        while to_check != []:
+        while to_check != set():
             position = to_check.pop()
-            if position in checked:
-                continue
             for neighbour in NEIGHBOURS:
                 next_step = (
                     position[0] + neighbour[0],
@@ -77,8 +76,8 @@ class Lava:
                 if next_step in self.cubes:
                     surface += 1
                     continue
-                to_check.append(next_step)
-            checked.append(position)
+                to_check.add(next_step)
+            checked.add(position)
         return surface
 
 
