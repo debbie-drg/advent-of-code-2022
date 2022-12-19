@@ -49,14 +49,16 @@ class Blueprint:
         return materials_after, number_robots_after
 
     def enough_materials(
-        self, materials: list[int], number_robots: list[int]
+        self, materials: list[int], number_robots: list[int], time_remaining: int
     ) -> list[int]:
         enough = []
         for index in range(
             len(self.robot_costs) - 1, -1, -1
         ):  # Reverse to give later robots priority
             if (
-                index == 3 or number_robots[index] < self.max_cost_per_resource[index]
+                index == 3
+                or number_robots[index] * time_remaining + materials[index]
+                < time_remaining * self.max_cost_per_resource[index]
             ) and all(
                 [
                     material >= cost
@@ -85,7 +87,7 @@ class Blueprint:
         cache.add(cache_element)
         if materials[3] + self.achievable(time_remaining, number_robots) <= max_geodes:
             return max_geodes, cache
-        to_purchase_this_round = self.enough_materials(materials, number_robots)
+        to_purchase_this_round = self.enough_materials(materials, number_robots, time_remaining)
         materials = self.update_materials(materials, number_robots)
         if time_remaining == 1:
             return materials[3], cache
