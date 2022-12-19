@@ -3,6 +3,7 @@ from copy import copy
 import multiprocessing
 
 TIME_LIMIT = 24
+TIME_LIMIT_ELEPHANTS_NOT_HUNGRY = 32
 
 def parse_blueprint(blueprint: str) -> tuple[int, list[list[int]]]:
     split_blueprint = blueprint.split(" ")
@@ -53,10 +54,6 @@ class Blueprint:
                 ]
             ):
                 enough.append(index)
-        # We stop building robots when we have enough to cover demand in one minute.
-        # If obsidian or geode can be built, we build it.
-        if 2 in enough or 3 in enough:
-            enough = [robot for robot in enough if robot in [2,3]]
         return enough
 
     @staticmethod
@@ -88,21 +85,33 @@ class Blueprint:
     def max_geodes(self, time_limit: int) -> int:
         number_robots = [1, 0, 0, 0]
         materials = [0, 0, 0, 0]
+        max_geodes = self.next_step(time_limit, materials, number_robots, 0)
+        print(self.id, max_geodes)
         return self.next_step(time_limit, materials, number_robots, 0)
 
     def quality_level(self, time_limit: int) -> int:
-        max_geodes = self.max_geodes(time_limit)
-        return max_geodes * self.id
+        return self.max_geodes(time_limit) * self.id
 
 def quality_level(blueprint: Blueprint) -> int:
     global TIME_LIMIT
     return blueprint.quality_level(TIME_LIMIT)
+
+def max_geodes(blueprint: Blueprint) -> int:
+    global TIME_LIMIT_ELEPHANTS_NOT_HUNGRY
+    return blueprint.max_geodes(TIME_LIMIT_ELEPHANTS_NOT_HUNGRY)
 
 def multiprocess_quality_levels(blueprints: list[Blueprint]):
     with multiprocessing.Pool() as pool:
         results = 0
         for result in pool.map(quality_level, blueprints):
             results += result
+    return results
+
+def multiprocess_max_geodes(blueprints: list[Blueprint]):
+    with multiprocessing.Pool() as pool:
+        results = 1
+        for result in pool.map(max_geodes, blueprints):
+            results *= result
     return results
 
 if __name__ == "__main__":
@@ -118,4 +127,5 @@ if __name__ == "__main__":
 
     blueprints = list(map(Blueprint, blueprints))
 
-    print(f"The total quality level is {multiprocess_quality_levels(blueprints)}.")
+    #print(f"The total quality level is {multiprocess_quality_levels(blueprints)}.")
+    print(f"The first three blueprints produce a product of {multiprocess_max_geodes(blueprints[:3])}.")
