@@ -68,10 +68,24 @@ class Blueprint:
                 enough.append(index)
         return enough
 
-    @staticmethod
-    def achievable(time_remaining: int, number_robots: list[int]):
-        achievable = number_robots[3] * time_remaining
-        return achievable + (time_remaining * (time_remaining - 1)) // 2
+    def achievable(
+        self, time_remaining: int, number_robots: list[int], materials: list[int]
+    ):
+        max_obsidian = (
+            materials[2]
+            + number_robots[2] * time_remaining
+            + (time_remaining * (time_remaining - 1)) // 2
+        )
+        max_new_geode_robots = max_obsidian // self.robot_costs[3][2]
+        achievable = materials[3] + number_robots[3] * time_remaining
+        if max_new_geode_robots >= time_remaining:
+            return achievable + (time_remaining * (time_remaining - 1)) // 2
+        else:
+            return (
+                achievable
+                + (max_new_geode_robots * (max_new_geode_robots - 1)) // 2
+                + (time_remaining - max_new_geode_robots) * max_new_geode_robots
+            )
 
     def next_step(
         self,
@@ -85,9 +99,11 @@ class Blueprint:
         if cache_element in cache:
             return max_geodes, cache
         cache.add(cache_element)
-        if materials[3] + self.achievable(time_remaining, number_robots) <= max_geodes:
+        if self.achievable(time_remaining, number_robots, materials) <= max_geodes:
             return max_geodes, cache
-        to_purchase_this_round = self.enough_materials(materials, number_robots, time_remaining)
+        to_purchase_this_round = self.enough_materials(
+            materials, number_robots, time_remaining
+        )
         materials = self.update_materials(materials, number_robots)
         if time_remaining == 1:
             return materials[3], cache
