@@ -2,6 +2,8 @@ import sys
 from copy import copy
 import multiprocessing
 
+TIME_LIMIT = 24
+
 def parse_blueprint(blueprint: str) -> tuple[int, list[list[int]]]:
     split_blueprint = blueprint.split(" ")
     blueprint_id = int(split_blueprint[1].removesuffix(":"))
@@ -57,20 +59,28 @@ class Blueprint:
             enough = [robot for robot in enough if robot in [2,3]]
         return enough
 
+    @staticmethod
+    def achievable(time_remaining: int, number_robots: list[int]):
+        achievable = number_robots[3] * time_remaining
+        return achievable + (time_remaining*(time_remaining - 1))//2
+
     def next_step(
-        self, time_remaining: int, materials: list[int], number_robots: list[int]
+        self, time_remaining: int, materials: list[int], number_robots: list[int], max_geodes: int
     ) -> int:
+        if materials[3] + self.achievable(time_remaining, number_robots) <= max_geodes:
+            return max_geodes
         to_purchase_this_round = self.enough_materials(materials, number_robots)
         materials = self.update_materials(materials, number_robots)
         if time_remaining == 1:
             return materials[3]
-        max_geodes = self.next_step(time_remaining - 1, materials, number_robots) # If no purchase
+        max_geodes = max(max_geodes, self.next_step(time_remaining - 1, materials, number_robots, max_geodes)) # If no purchase
         for robot_type in to_purchase_this_round: # For the possible purchases. Later robots are purchased first.
             max_geodes = max(
                 max_geodes,
                 self.next_step(
                     time_remaining - 1,
-                    *self.purchase_robot(robot_type, number_robots, materials)
+                    *self.purchase_robot(robot_type, number_robots, materials),
+                    max_geodes,
                 ),
             )
         return max_geodes
@@ -78,11 +88,22 @@ class Blueprint:
     def max_geodes(self, time_limit: int) -> int:
         number_robots = [1, 0, 0, 0]
         materials = [0, 0, 0, 0]
-        return self.next_step(time_limit, materials, number_robots)
+        return self.next_step(time_limit, materials, number_robots, 0)
 
     def quality_level(self, time_limit: int) -> int:
-        return self.max_geodes(time_limit)
+        max_geodes = self.max_geodes(time_limit)
+        return max_geodes * self.id
 
+def quality_level(blueprint: Blueprint) -> int:
+    global TIME_LIMIT
+    return blueprint.quality_level(TIME_LIMIT)
+
+def multiprocess_quality_levels(blueprints: list[Blueprint]):
+    with multiprocessing.Pool() as pool:
+        results = 0
+        for result in pool.map(quality_level, blueprints):
+            results += result
+    return results
 
 if __name__ == "__main__":
     try:
@@ -97,11 +118,4 @@ if __name__ == "__main__":
 
     blueprints = list(map(Blueprint, blueprints))
 
-    def quality_level(blueprint: Blueprint):
-        return blueprint.quality_level(24)
-
-    results = 0
-    with multiprocessing.Pool() as pool:
-        for result in pool.map(quality_level, blueprints):
-            results += result
-    print(f"The total quality level is {results}.")
+    print(f"The total quality level is {multiprocess_quality_levels(blueprints)}.")
