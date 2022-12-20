@@ -110,11 +110,10 @@ class CaveValves:
         max_score = self.max_achievable_score(
             current_score, current_score_per_minute, time_left, candidates
         )
-        match gather_routes:
-            case True:
-                compare = self.best_score - self.best_partial
-            case False:
-                compare = self.best_score
+        if gather_routes:
+            compare = self.best_score - self.best_partial
+        else:
+            compare = self.best_score
         if max_score < compare:
             return None
         if gather_routes:
