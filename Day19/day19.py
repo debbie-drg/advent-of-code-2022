@@ -120,7 +120,7 @@ class Blueprint:
             return max_geodes, cache
         cache.add(cache_element)
 
-        for robot_type in range(len(materials) - 1, -1, -1):
+        for robot_type in range(len(materials)):
             time_to_wait = self.turns_to_purchase(
                 materials, number_robots, time_remaining, robot_type
             )
