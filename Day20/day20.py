@@ -13,11 +13,14 @@ def mix(encrypted_file: list[int], number_times: int = 1) -> list[int]:
 
     for _ in range(number_times):
         for index, element in enumerate(encrypted_file):
+            if element == 0:
+                continue
             location = indices.index(index)
             indices.pop(location)
             new_location = (element + location) % (number_instructions - 1)
-            if new_location == 0 and element != 0:
-                indices.append(index)
+            if new_location == 0:
+                indices.append(index) # This is not really needed but makes the 
+                # behaviour match the examples.
             else:
                 indices.insert(new_location, index)        
     return [encrypted_file[index] for index in indices]
