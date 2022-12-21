@@ -56,7 +56,8 @@ class MonkeyMath:
         value_child_0 = self.yell(self.monkeys[monkey].children[0])
         value_child_1 = self.yell(self.monkeys[monkey].children[1])
         operation_marker = self.monkeys[monkey].operation
-        return self.match_operation(value_child_0, value_child_1, operation_marker)
+        self.monkeys[monkey].value = self.match_operation(value_child_0, value_child_1, operation_marker)
+        return self.monkeys[monkey].value
 
     def root_human_path(self) -> list[str]:
         current_monkey = "humn"
