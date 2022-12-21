@@ -29,9 +29,11 @@ class MonkeyMath:
                 return value_0 - value_1
             case other:
                 raise ValueError
-    
+
     @staticmethod
-    def match_opposite_operation(answer: int, other_branch: int, operation_marker: str, human_first: bool) -> int:
+    def match_opposite_operation(
+        answer: int, other_branch: int, operation_marker: str, human_first: bool
+    ) -> int:
         match operation_marker:
             case "+":
                 return answer - other_branch
@@ -47,7 +49,6 @@ class MonkeyMath:
                 return other_branch // answer
             case other:
                 raise ValueError
-
 
     def yell(self, monkey: str) -> int:
         if self.monkeys[monkey].value is not None:
@@ -68,16 +69,25 @@ class MonkeyMath:
 
     def yell_human(self) -> int:
         root_human_path = self.root_human_path()
-        answer = self.yell([child for child in self.monkeys["root"].children if child != root_human_path[0]][0])
+        answer = self.yell(
+            [
+                child
+                for child in self.monkeys["root"].children
+                if child != root_human_path[0]
+            ][0]
+        )
         for element in root_human_path[1:]:
             parent = self.monkeys[element].parent
             operation_marker = self.monkeys[parent].operation
-            sibling = [child for child in self.monkeys[parent].children if child != element][0]
+            sibling = [
+                child for child in self.monkeys[parent].children if child != element
+            ][0]
             other_value = self.yell(sibling)
             human_first = self.monkeys[parent].children[0] == element
-            answer = self.match_opposite_operation(answer, other_value, operation_marker, human_first)
+            answer = self.match_opposite_operation(
+                answer, other_value, operation_marker, human_first
+            )
         return answer
-
 
 
 class Monkey:
