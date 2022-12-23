@@ -59,7 +59,7 @@ class ElfGroove:
             trying_move.append(elf.get_move(self.move_index, locations))
             if trying_move[-1]:
                 elf.try_move()
-        if all([trying == False for trying in trying_move]):
+        if all([not trying for trying in trying_move]):
             return False
         self.move_index += 1
         tentative_locations = dict()
@@ -98,8 +98,8 @@ class Elf:
         return set([tuple_sum(self.location, direction) for direction in offset])
 
     def get_move(self, index_offset: int, locations: set) -> bool:
+        self.move_direction = (0, 0)
         if len(locations.intersection(self.neighbours(ALL_DIRECTIONS))) == 0:
-            self.move_direction = (0, 0)
             return False
         for index in range(len(NEIGHBOUR_OFFSETS)):
             move_index = (index + index_offset) % len(NEIGHBOUR_OFFSETS)
@@ -113,7 +113,6 @@ class Elf:
             ):
                 self.move_direction = MOVE_DIRECTIONS[move_index]
                 return True
-        self.move_direction = (0, 0)
         return False
 
     def try_move(self):
