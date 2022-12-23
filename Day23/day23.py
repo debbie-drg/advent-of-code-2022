@@ -16,14 +16,14 @@ def tuple_sum(tuple_1: tuple[int, int], tuple_2: tuple[int, int]) -> tuple[int, 
 
 class ElfGroove:
     def __init__(self, terrain_map: list[str]):
-        self.elves = []
+        self.elves = set()
         self.move_index = 0
         self.number_rounds = 0
         terrain_map.reverse()
         for row, line in enumerate(terrain_map):
             for column, character in enumerate(line):
                 if character == "#":
-                    self.elves.append(Elf((row, column)))
+                    self.elves.add((row, column))
 
     def __repr__(self) -> str:
         self.get_boundaries()
@@ -46,38 +46,60 @@ class ElfGroove:
     def get_boundaries(self):
         self.top, self.bottom, self.left, self.right = 0, 0, 0, 0
         for elf in self.elves:
-            self.top = max(self.top, elf.location[0])
-            self.bottom = min(self.bottom, elf.location[0])
-            self.left = min(self.left, elf.location[1])
-            self.right = max(self.right, elf.location[1])
+            self.top = max(self.top, elf[0])
+            self.bottom = min(self.bottom, elf[0])
+            self.left = min(self.left, elf[1])
+            self.right = max(self.right, elf[1])
+
+    @staticmethod
+    def neighbours(
+        location: tuple[int, int], offset: list[tuple[int, int]]
+    ) -> set[tuple[int, int]]:
+        return set(map(lambda x: tuple_sum(location, x), offset))
+
+    def get_tentative_move(self, location) -> tuple[int, int]:
+        if len(self.elves.intersection(self.neighbours(location, ALL_DIRECTIONS))) == 0:
+            return location
+        for index in range(len(NEIGHBOUR_OFFSETS)):
+            move_index = (index + self.move_index) % len(NEIGHBOUR_OFFSETS)
+            if (
+                len(
+                    self.elves.intersection(
+                        self.neighbours(location, NEIGHBOUR_OFFSETS[move_index])
+                    )
+                )
+                == 0
+            ):
+                return tuple_sum(MOVE_DIRECTIONS[move_index], location)
+        return location
 
     def move_round(self) -> bool:
         self.number_rounds += 1
-        locations = set([elf.location for elf in self.elves])
-        trying_move = []
+        tentative_locations = dict()
+        new_locations = set()
+        any_moved = False
         for elf in self.elves:
-            trying_move.append(elf.get_move(self.move_index, locations))
-            if trying_move[-1]:
-                elf.try_move()
-        if all([not trying for trying in trying_move]):
+            tentative_position = self.get_tentative_move(elf)
+            if tentative_position != elf:
+                any_moved = True
+                try:
+                    tentative_locations[tentative_position].append(elf)
+                except KeyError:
+                    tentative_locations[tentative_position] = [elf]
+            else:
+                new_locations.add(elf)
+        if not any_moved:
             return False
         self.move_index += 1
-        tentative_locations = dict()
-        for index, elf in enumerate(self.elves):
-            if not trying_move[index]:
-                continue
-            try:
-                tentative_locations[elf.tentative_location].append(elf)
-            except KeyError:
-                tentative_locations[elf.tentative_location] = [elf]
         any_moved = False
-        for index, elf in enumerate(self.elves):
-            if not trying_move[index]:
-                continue
-
-            if len(tentative_locations[elf.tentative_location]) == 1:
-                elf.move()
+        for position in tentative_locations:
+            if len(tentative_locations[position]) == 1:
+                new_locations.add(position)
                 any_moved = True
+            else:
+                for elf in tentative_locations[position]:
+                    new_locations.add(elf)
+        self.elves = new_locations
         return any_moved
 
     def move_several(self, number_rounds: int):
@@ -88,38 +110,6 @@ class ElfGroove:
         while self.move_round():
             pass
         return self.number_rounds
-
-
-class Elf:
-    def __init__(self, location: tuple[int, int]):
-        self.location = location
-
-    def neighbours(self, offset: list[tuple[int, int]]) -> set[tuple[int, int]]:
-        return set([tuple_sum(self.location, direction) for direction in offset])
-
-    def get_move(self, index_offset: int, locations: set) -> bool:
-        self.move_direction = (0, 0)
-        if len(locations.intersection(self.neighbours(ALL_DIRECTIONS))) == 0:
-            return False
-        for index in range(len(NEIGHBOUR_OFFSETS)):
-            move_index = (index + index_offset) % len(NEIGHBOUR_OFFSETS)
-            if (
-                len(
-                    locations.intersection(
-                        self.neighbours(NEIGHBOUR_OFFSETS[move_index])
-                    )
-                )
-                == 0
-            ):
-                self.move_direction = MOVE_DIRECTIONS[move_index]
-                return True
-        return False
-
-    def try_move(self):
-        self.tentative_location = tuple_sum(self.location, self.move_direction)
-
-    def move(self):
-        self.location = self.tentative_location
 
 
 if __name__ == "__main__":
