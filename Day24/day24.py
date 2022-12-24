@@ -1,6 +1,7 @@
 import sys
 
 NEIGHBOURS = [(0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)]
+MOVE_DIRECTIONS = {">": (0, 1), "<": (0, -1), "^": (-1, 0), "v": (1, 0)}
 
 
 def sum_tuple(tuple_1: tuple[int, int], tuple_2: tuple[int, int]) -> tuple[int, int]:
@@ -18,42 +19,20 @@ class Basin:
         self.upper_horizontal = len(split_basin_input[0]) - 1
         self.start_point = (0, 1)
         self.end_point = (self.upper_vertical, self.upper_horizontal - 1)
+        limits = (
+            self.lower_horizontal,
+            self.upper_horizontal,
+            self.lower_vertical,
+            self.upper_vertical,
+        )
         for row_index, row in enumerate(split_basin_input):
             for column_index, character in enumerate(row):
-                if character == ">":
+                if character in MOVE_DIRECTIONS:
                     self.blizzards.append(
                         Blizzard(
                             (row_index, column_index),
-                            (0, 1),
-                            (row_index, self.lower_horizontal),
-                            (row_index, self.upper_horizontal),
-                        )
-                    )
-                if character == "<":
-                    self.blizzards.append(
-                        Blizzard(
-                            (row_index, column_index),
-                            (0, -1),
-                            (row_index, self.upper_horizontal),
-                            (row_index, self.lower_horizontal),
-                        )
-                    )
-                if character == "^":
-                    self.blizzards.append(
-                        Blizzard(
-                            (row_index, column_index),
-                            (-1, 0),
-                            (self.upper_vertical, column_index),
-                            (self.lower_vertical, column_index),
-                        )
-                    )
-                if character == "v":
-                    self.blizzards.append(
-                        Blizzard(
-                            (row_index, column_index),
-                            (1, 0),
-                            (self.lower_vertical, column_index),
-                            (self.upper_vertical, column_index),
+                            character,
+                            limits,
                         )
                     )
 
@@ -87,9 +66,7 @@ class Basin:
             time_elapsed += 1
             next_round_locations = set()
             for location in locations:
-                next_round_locations.update(
-                    self.next_possible_steps(location)
-                )
+                next_round_locations.update(self.next_possible_steps(location))
             if self.end_point in next_round_locations and not reverse:
                 return time_elapsed
             if self.start_point in next_round_locations and reverse:
@@ -101,14 +78,25 @@ class Blizzard:
     def __init__(
         self,
         location: tuple[int, int],
-        move_direction: tuple[int, int],
-        start: tuple[int, int],
-        end: tuple[int, int],
+        move_direction: str,
+        limits: tuple[int, int, int, int],
     ) -> None:
         self.location = location
-        self.move_direction = move_direction
-        self.start = start
-        self.end = end
+        self.move_direction = MOVE_DIRECTIONS[move_direction]
+        lower_horizontal, upper_horizontal, lower_vertical, upper_vertical = limits
+        match move_direction:
+            case ">":
+                self.start = (location[0], lower_horizontal)
+                self.end = (location[0], upper_horizontal)
+            case "<":
+                self.start = (location[0], upper_horizontal)
+                self.end = (location[0], lower_horizontal)
+            case "^":
+                self.start = (upper_vertical, location[1])
+                self.end = (lower_vertical, location[1])
+            case "v":
+                self.start = (lower_vertical, location[1])
+                self.end = (upper_vertical, location[1])
 
     def move(self) -> None:
         self.location = sum_tuple(self.location, self.move_direction)
