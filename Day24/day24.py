@@ -1,5 +1,7 @@
 import sys
 
+NEIGHBOURS = [(0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)]
+
 
 def sum_tuple(tuple_1: tuple[int, int], tuple_2: tuple[int, int]) -> tuple[int, int]:
     return (tuple_1[0] + tuple_2[0], tuple_1[1] + tuple_2[1])
@@ -16,42 +18,42 @@ class Basin:
         self.upper_horizontal = len(split_basin_input[0]) - 1
         self.start_point = (0, 1)
         self.end_point = (self.upper_vertical, self.upper_horizontal - 1)
-        for row_index, row in enumerate(split_basin_input[1:-1]):
-            for column_index, character in enumerate(row[1:-1]):
+        for row_index, row in enumerate(split_basin_input):
+            for column_index, character in enumerate(row):
                 if character == ">":
                     self.blizzards.append(
                         Blizzard(
-                            (row_index + 1, column_index + 1),
+                            (row_index, column_index),
                             (0, 1),
-                            (row_index + 1, self.lower_horizontal),
-                            (row_index + 1, self.upper_horizontal),
+                            (row_index, self.lower_horizontal),
+                            (row_index, self.upper_horizontal),
                         )
                     )
                 if character == "<":
                     self.blizzards.append(
                         Blizzard(
-                            (row_index + 1, column_index + 1),
+                            (row_index, column_index),
                             (0, -1),
-                            (row_index + 1, self.upper_horizontal),
-                            (row_index + 1, self.lower_horizontal),
+                            (row_index, self.upper_horizontal),
+                            (row_index, self.lower_horizontal),
                         )
                     )
                 if character == "^":
                     self.blizzards.append(
                         Blizzard(
-                            (row_index + 1, column_index + 1),
+                            (row_index, column_index),
                             (-1, 0),
-                            (self.upper_vertical, column_index + 1),
-                            (self.lower_vertical, column_index + 1),
+                            (self.upper_vertical, column_index),
+                            (self.lower_vertical, column_index),
                         )
                     )
                 if character == "v":
                     self.blizzards.append(
                         Blizzard(
-                            (row_index + 1, column_index + 1),
+                            (row_index, column_index),
                             (1, 0),
-                            (self.lower_vertical, column_index + 1),
-                            (self.upper_vertical, column_index + 1),
+                            (self.lower_vertical, column_index),
+                            (self.upper_vertical, column_index),
                         )
                     )
 
@@ -62,36 +64,23 @@ class Basin:
             blizard_locations.add(blizzard.location)
         self.blizzard_locations = blizard_locations
 
-    def neighbours(self, location: tuple[int, int]) -> set[tuple[int, int]]:
-        neighbours = set([location])
-        if location == self.start_point:
-            neighbours.add((1, 1))
-            return neighbours
-        if location == self.end_point:
-            neighbours.add((self.upper_vertical - 1, self.upper_horizontal - 1))
-            return neighbours
-        if location[0] - 1 != self.lower_vertical or location[1] == self.start_point[1]:
-            neighbours.add(sum_tuple((-1, 0), location))
-        if location[0] + 1 != self.upper_vertical or location[1] == self.end_point[1]:
-            neighbours.add(sum_tuple((1, 0), location))
-        if location[1] - 1 != self.lower_horizontal:
-            neighbours.add(sum_tuple((0, -1), location))
-        if location[1] + 1 != self.upper_horizontal:
-            neighbours.add(sum_tuple((0, 1), location))
-        return neighbours
-
-    def get_next_possible_steps(
-        self, location: tuple[int, int]
-    ) -> list[tuple[int, int]]:
-        next_possible_locations = self.neighbours(location)
-        return [
-            neighbour
-            for neighbour in next_possible_locations
-            if neighbour not in self.blizzard_locations
-        ]
+    def next_possible_steps(self, location: tuple[int, int]) -> set[tuple[int, int]]:
+        move_options = [sum_tuple(location, neighbour) for neighbour in NEIGHBOURS]
+        return {
+            location
+            for location in move_options
+            if location not in self.blizzard_locations
+            and (
+                location in [self.start_point, self.end_point]
+                or (
+                    (self.lower_horizontal < location[1] < self.upper_horizontal)
+                    and (self.lower_vertical < location[0] < self.upper_vertical)
+                )
+            )
+        }
 
     def find_path(self, reverse=False) -> int:
-        locations = set([self.start_point]) if not reverse else set([self.end_point])
+        locations = {self.start_point} if not reverse else {self.end_point}
         time_elapsed = 0
         while True:
             self.update_blizzards()
@@ -99,7 +88,7 @@ class Basin:
             next_round_locations = set()
             for location in locations:
                 next_round_locations = next_round_locations.union(
-                    self.get_next_possible_steps(location)
+                    self.next_possible_steps(location)
                 )
             if self.end_point in next_round_locations and not reverse:
                 return time_elapsed
