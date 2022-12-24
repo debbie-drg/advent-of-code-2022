@@ -87,7 +87,7 @@ class Basin:
             time_elapsed += 1
             next_round_locations = set()
             for location in locations:
-                next_round_locations = next_round_locations.union(
+                next_round_locations.update(
                     self.next_possible_steps(location)
                 )
             if self.end_point in next_round_locations and not reverse:
