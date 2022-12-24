@@ -27,7 +27,6 @@ class Basin:
                             (row_index + 1, self.upper_horizontal),
                         )
                     )
-                    self.blizzard_locations.add((row_index + 1, column_index + 1))
                 if character == "<":
                     self.blizzards.append(
                         Blizzard(
@@ -37,7 +36,6 @@ class Basin:
                             (row_index + 1, self.lower_horizontal),
                         )
                     )
-                    self.blizzard_locations.add((row_index + 1, column_index + 1))
                 if character == "^":
                     self.blizzards.append(
                         Blizzard(
@@ -47,7 +45,6 @@ class Basin:
                             (self.lower_vertical, column_index + 1),
                         )
                     )
-                    self.blizzard_locations.add((row_index + 1, column_index + 1))
                 if character == "v":
                     self.blizzards.append(
                         Blizzard(
@@ -57,20 +54,6 @@ class Basin:
                             (self.upper_vertical, column_index + 1),
                         )
                     )
-                    self.blizzard_locations.add((row_index + 1, column_index + 1))
-
-    def __repr__(self) -> str:
-        representation = "#" * (self.upper_horizontal + 1) + "\n"
-        for row_index in range(1, self.upper_vertical):
-            representation += "#"
-            for col_index in range(1, self.upper_horizontal):
-                if (row_index, col_index) in self.blizzard_locations:
-                    representation += "#"
-                else:
-                    representation += "."
-            representation += "#\n"
-        representation += "#" * (self.upper_horizontal + 1)
-        return representation
 
     def update_blizzards(self) -> None:
         blizard_locations = set()
