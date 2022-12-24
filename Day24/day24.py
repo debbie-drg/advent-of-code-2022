@@ -84,19 +84,18 @@ class Blizzard:
         self.location = location
         self.move_direction = MOVE_DIRECTIONS[move_direction]
         lower_horizontal, upper_horizontal, lower_vertical, upper_vertical = limits
-        match move_direction:
-            case ">":
-                self.start = (location[0], lower_horizontal + 1)
-                self.end = (location[0], upper_horizontal)
-            case "<":
-                self.start = (location[0], upper_horizontal - 1)
-                self.end = (location[0], lower_horizontal)
-            case "^":
-                self.start = (upper_vertical - 1, location[1])
-                self.end = (lower_vertical, location[1])
-            case "v":
-                self.start = (lower_vertical + 1, location[1])
-                self.end = (upper_vertical, location[1])
+        if move_direction == ">":
+            self.start = (location[0], lower_horizontal + 1)
+            self.end = (location[0], upper_horizontal)
+        if move_direction == "<":
+            self.start = (location[0], upper_horizontal - 1)
+            self.end = (location[0], lower_horizontal)
+        if move_direction == "^":
+            self.start = (upper_vertical - 1, location[1])
+            self.end = (lower_vertical, location[1])
+        if move_direction == "v":
+            self.start = (lower_vertical + 1, location[1])
+            self.end = (upper_vertical, location[1])
 
     def move(self) -> None:
         self.location = sum_tuple(self.location, self.move_direction)
