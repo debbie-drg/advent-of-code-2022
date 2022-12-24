@@ -86,22 +86,22 @@ class Blizzard:
         lower_horizontal, upper_horizontal, lower_vertical, upper_vertical = limits
         match move_direction:
             case ">":
-                self.start = (location[0], lower_horizontal)
+                self.start = (location[0], lower_horizontal + 1)
                 self.end = (location[0], upper_horizontal)
             case "<":
-                self.start = (location[0], upper_horizontal)
+                self.start = (location[0], upper_horizontal - 1)
                 self.end = (location[0], lower_horizontal)
             case "^":
-                self.start = (upper_vertical, location[1])
+                self.start = (upper_vertical - 1, location[1])
                 self.end = (lower_vertical, location[1])
             case "v":
-                self.start = (lower_vertical, location[1])
+                self.start = (lower_vertical + 1, location[1])
                 self.end = (upper_vertical, location[1])
 
     def move(self) -> None:
         self.location = sum_tuple(self.location, self.move_direction)
         if self.location == self.end:
-            self.location = sum_tuple(self.start, self.move_direction)
+            self.location = self.start
 
 
 if __name__ == "__main__":
