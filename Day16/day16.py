@@ -1,5 +1,4 @@
 import sys
-from itertools import chain, combinations
 
 
 def parse_data(pipe_data: list[str]) -> list:

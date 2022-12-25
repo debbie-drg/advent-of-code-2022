@@ -1,5 +1,4 @@
 import sys
-import time
 
 VALUE_A = ord("a")
 

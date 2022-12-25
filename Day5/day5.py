@@ -1,4 +1,3 @@
-from copy import deepcopy
 import sys
 
 class Port:
@@ -67,7 +66,7 @@ if __name__ == "__main__":
     cranes, moves = open(file_name).read().split(sep="\n\n")
     moves = extract_moves(moves)
     stacks_9000 = Port(cranes)
-    stacks_9001 = deepcopy(stacks_9000)
+    stacks_9001 = Port(cranes)
     stacks_9001.mode_9001 = True
     for move in moves:
         stacks_9000.move(*move)
