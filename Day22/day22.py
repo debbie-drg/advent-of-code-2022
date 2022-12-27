@@ -44,13 +44,13 @@ class JungleFace:
 
 
 class JungleCube:
-    def __init__(self, terrain: list[str]):
+    def __init__(self, terrain: list[str], cube_configuration: bool = False):
         self.faces = []
         self.cube_corners = self.get_top_left(terrain)
         assert len(self.cube_corners) == 6, "Input does not seem to be a cube"
         for corner in self.cube_corners:
             self.faces.append(JungleFace(corner, self.get_walls(terrain, corner)))
-        self.set_cube_configuration(False)
+        self.set_cube_configuration(cube_configuration)
 
     @staticmethod
     def compute_cube_size(terrain: list[str]) -> int:
@@ -98,18 +98,17 @@ class JungleCube:
         self.fold_cube()
 
     def set_cube_wrapping(self):
-        for index, corner in enumerate(self.cube_corners):
-            for direction_index, direction in enumerate(DIRECTION_VALUES):
+        for index in range(len(self.cube_corners)):
+            for direction_index in range(len(DIRECTION_VALUES)):
                 if self.faces[index].neighbours[direction_index] == -1:
-                    current_tuple = corner
-                    tuple_index = 0
-                    while current_tuple in self.cube_corners:
-                        tuple_index = self.cube_corners.index(current_tuple)
-                        current_tuple = substract_tuples(
-                            current_tuple, scalar_times_tuple(self.cube_size, direction)
-                        )
-                    self.faces[index].neighbours[direction_index] = tuple_index
-
+                    opposite_direction = (direction_index + 2) % len(DIRECTION_VALUES)
+                    current_index = index
+                    next_index = self.faces[index].neighbours[opposite_direction]
+                    while next_index not in [-1, index]:
+                        current_index = next_index
+                        next_index = self.faces[current_index].neighbours[opposite_direction]
+                    self.faces[index].neighbours[direction_index] = current_index
+                    
     def fold_cube(self):
         pass
 
@@ -230,3 +229,7 @@ if __name__ == "__main__":
     instructions = parse_instructions(moves)
     jungle.path_move(instructions)
     print(f"The password is {jungle.password()}.")
+
+    jungle.set_cube_configuration(True)
+    jungle.path_move(instructions)
+    print(f"The password when seen as cube is {jungle.password()}.")
