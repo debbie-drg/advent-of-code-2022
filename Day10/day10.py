@@ -23,7 +23,7 @@ def check_new_line(cycle_count: int) -> str:
     return "\n" if cycle_count % 40 == 0 else ""
 
 
-def render_display(instructions: list[list[str]]) -> str:
+def render_display(instructions: list[list[str]]) -> tuple[int, str]:
     display = ""
     registry_x = 1
     strength_sum = 0
