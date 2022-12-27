@@ -3,7 +3,6 @@ import sys
 DIRECTION_VALUES = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 # Right, down, left, up
 # Anlges are 0, 1 (90), 2 (180), 3 (270)
-DIRECTIONS = ["right", "down", "left", "up"]
 
 def parse_instructions(instructions: str) -> list:
     parsed_instructions = []
@@ -194,7 +193,7 @@ class JungleCube:
                     return None
                 self.position = next_position
 
-    def in_map_location(self):
+    def in_map_location(self) -> tuple[int,int]:
         return self.faces[self.current_face].in_map_position(self.position)
 
     def password(self) -> int:
