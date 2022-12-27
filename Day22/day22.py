@@ -125,43 +125,41 @@ class JungleCube:
         self, current_location: tuple[int, int], angle: int
     ) -> tuple[int, int]:
         last_coordinate = self.cube_size - 1
-        if self.direction_index == 0:
-            if angle == 0:
+        match (self.direction_index, angle):
+            case 0, 0:
                 return (0, current_location[1])
-            if angle == 1:
+            case 0, 1:
                 return (last_coordinate - current_location[1], 0)
-            if angle == 2:
+            case 0, 2:
                 return (last_coordinate, last_coordinate - current_location[1])
-            if angle == 3:
+            case 0, 3:
                 return (0, current_location[1])
-        if self.direction_index == 1:
-            if angle == 0:
+            case 1, 0:
                 return (current_location[0], 0)
-            if angle == 1:
+            case 1, 1:
                 return (last_coordinate, current_location[0])
-            if angle == 2:
+            case 1, 2:
                 return (last_coordinate - current_location[0], last_coordinate)
-            if angle == 3:
+            case 1, 3:
                 return (0, current_location[0])
-        if self.direction_index == 2:
-            if angle == 0:
+            case 2, 0:
                 return (last_coordinate, current_location[1])
-            if angle == 1:
+            case 2, 1:
                 return (last_coordinate - current_location[1], last_coordinate)
-            if angle == 2:
+            case 2, 2:
                 return (last_coordinate, last_coordinate - current_location[1])
-            if angle == 3:
+            case 2, 3:
                 return (current_location[1], 0)
-        if self.direction_index == 3:
-            if angle == 0:
+            case 3, 0:
                 return (current_location[0], last_coordinate)
-            if angle == 1:
+            case 3, 1:
                 return (0, current_location[0])
-            if angle == 2:
+            case 3, 2:
                 return (last_coordinate - current_location[0], last_coordinate)
-            if angle == 3:
+            case 3, 3:
                 return (last_coordinate, last_coordinate - current_location[0])
-        raise AssertionError
+            case other:
+                raise AssertionError
 
     def is_out_of_bounds(self, position: tuple[int, int]) -> bool:
         return any([element < 0 or element >= self.cube_size for element in position])
