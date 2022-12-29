@@ -4,6 +4,8 @@ DIRECTION_VALUES = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 # Right, down, left, up.
 # Anlges are 0 for upright, then clockwise.
 
+checked_pairs = set()
+
 
 def parse_instructions(instructions: str) -> list:
     parsed_instructions = []
@@ -143,6 +145,8 @@ class JungleCube:
                 if neighbours[3] == -1:
                     self.try_fill_top(face_index)
 
+    # We fold the cube by the 90 degree angles. We do so until every neighbour is filled.
+    # It's just a matter of being careful with the relative angles between the neighbours.
     def try_fill(
         self, face_index: int, direction_1: int, direction_2: int, angle_offset: int
     ) -> bool:
@@ -164,8 +168,11 @@ class JungleCube:
         return True
 
     def try_fill_right(self, face_index: int):
+        # Fill right by going bottom then right
         if not self.try_fill(face_index, 3, 0, 1):
+            # Fill right by going top then right
             self.try_fill(face_index, 1, 0, 3)
+        # Similar for the rest of the four directions
 
     def try_fill_bottom(self, face_index: int):
         if not self.try_fill(face_index, 0, 1, 1):
@@ -191,11 +198,13 @@ class JungleCube:
         self, current_location: tuple[int, int], angle: int
     ) -> tuple[int, int]:
         x, y, N = current_location[0], current_location[1], self.cube_size - 1
+        global checked_pairs
+        checked_pairs.add((self.direction_index, angle))
         match (self.direction_index, angle):
             case 0, 0:
                 return (0, y)
             case 0, 1:
-                return (0, y)
+                return (y, N)
             case 0, 2:
                 return (N, N - y)
             case 0, 3:
@@ -203,17 +212,17 @@ class JungleCube:
             case 1, 0:
                 return (x, 0)
             case 1, 1:
-                return (0, x)
+                return (0, N - x)
             case 1, 2:
                 return (N - x, N)
             case 1, 3:
-                return (N, 0)
+                return (N, x)
             case 2, 0:
                 return (N, y)
             case 2, 1:
                 return (y, 0)
             case 2, 2:
-                return (N, N - y)
+                return (0, N - y)
             case 2, 3:
                 return (N - y, N)
             case 3, 0:
@@ -221,7 +230,7 @@ class JungleCube:
             case 3, 1:
                 return (N, N - x)
             case 3, 2:
-                return (N - x, N)
+                return (N - x, 0)
             case 3, 3:
                 return (0, x)
             case other:
