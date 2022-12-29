@@ -265,15 +265,12 @@ class JungleCube:
 
     def path_move(self, instructions):
         self.direction_index = 0
+        direction_changes = {"R": 1, "L": -1}
         for instruction in instructions:
             if isinstance(instruction, int):
                 self.move(instruction)
             else:
-                match instruction:
-                    case "R":
-                        self.direction_index += 1
-                    case "L":
-                        self.direction_index -= 1
+                self.direction_index += direction_changes[instruction]
                 self.direction_index %= 4
 
 
