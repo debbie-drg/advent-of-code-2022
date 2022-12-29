@@ -1,8 +1,9 @@
 import sys
 
 DIRECTION_VALUES = [(1, 0), (0, 1), (-1, 0), (0, -1)]
-# Right, down, left, up
-# Anlges are 0, 1 (90), 2 (180), 3 (270)
+# Right, down, left, up.
+# Anlges are 0 for upright, then clockwise.
+
 
 def parse_instructions(instructions: str) -> list:
     parsed_instructions = []
@@ -14,6 +15,8 @@ def parse_instructions(instructions: str) -> list:
             number_buffer = ""
         else:
             number_buffer += character
+    if number_buffer != "":
+        parsed_instructions.append(int(number_buffer))
     return parsed_instructions
 
 
@@ -107,11 +110,74 @@ class JungleCube:
                 next_index = self.faces[index].neighbours[opposite_direction]
                 while next_index not in [-1, index]:
                     current_index = next_index
-                    next_index = self.faces[current_index].neighbours[opposite_direction]
+                    next_index = self.faces[current_index].neighbours[
+                        opposite_direction
+                    ]
                 self.faces[index].neighbours[direction_index] = current_index
-                    
+
+    @staticmethod
+    def inverse(value: int):
+        if value in [0, 2]:
+            return value
+        return (value + 2) % len(DIRECTION_VALUES)
+
     def fold_cube(self):
-        pass
+        set_up = [False] * len(self.cube_corners)
+        while not all(set_up):
+            indices = [
+                face_index
+                for face_index in range(len(set_up))
+                if not set_up[face_index]
+            ]
+            for face_index in indices:
+                neighbours = self.faces[face_index].neighbours
+                if all([neighbour != -1 for neighbour in neighbours]):
+                    set_up[face_index] = True
+                    continue
+                if neighbours[0] == -1:
+                    self.try_fill_right(face_index)
+                if neighbours[1] == -1:
+                    self.try_fill_bottom(face_index)
+                if neighbours[2] == -1:
+                    self.try_fill_left(face_index)
+                if neighbours[3] == -1:
+                    self.try_fill_top(face_index)
+
+    def try_fill(
+        self, face_index: int, direction_1: int, direction_2: int, angle_offset: int
+    ) -> bool:
+        neighbours = self.faces[face_index].neighbours
+        angles = self.faces[face_index].neighbour_angles
+        if neighbours[direction_1] == -1:
+            return False
+        neighbour_1 = neighbours[direction_1]
+        neighbour_1_angle = angles[direction_1]
+        neighbour_2_index = (direction_2 - neighbour_1_angle) % 4
+        neighbour_2 = self.faces[neighbour_1].neighbours[neighbour_2_index]
+        if neighbour_2 == -1:
+            return False
+        neighbour_2_angle = self.faces[neighbour_1].neighbour_angles[neighbour_2_index]
+        self.faces[face_index].neighbours[direction_2] = neighbour_2
+        self.faces[face_index].neighbour_angles[direction_2] = (
+            angle_offset + neighbour_1_angle + neighbour_2_angle
+        ) % 4
+        return True
+
+    def try_fill_right(self, face_index: int):
+        if not self.try_fill(face_index, 3, 0, 1):
+            self.try_fill(face_index, 1, 0, 3)
+
+    def try_fill_bottom(self, face_index: int):
+        if not self.try_fill(face_index, 0, 1, 1):
+            self.try_fill(face_index, 2, 1, 3)
+
+    def try_fill_left(self, face_index: int):
+        if not self.try_fill(face_index, 3, 2, 3):
+            self.try_fill(face_index, 1, 2, 1)
+
+    def try_fill_top(self, face_index: int):
+        if not self.try_fill(face_index, 2, 3, 1):
+            self.try_fill(face_index, 0, 3, 3)
 
     def restart_configuration(self):
         self.current_face = 0
@@ -124,40 +190,40 @@ class JungleCube:
     def wrap_location(
         self, current_location: tuple[int, int], angle: int
     ) -> tuple[int, int]:
-        last_coordinate = self.cube_size - 1
+        x, y, N = current_location[0], current_location[1], self.cube_size - 1
         match (self.direction_index, angle):
             case 0, 0:
-                return (0, current_location[1])
+                return (0, y)
             case 0, 1:
-                return (last_coordinate - current_location[1], 0)
+                return (0, y)
             case 0, 2:
-                return (last_coordinate, last_coordinate - current_location[1])
+                return (N, N - y)
             case 0, 3:
-                return (0, current_location[1])
+                return (N - y, 0)
             case 1, 0:
-                return (current_location[0], 0)
+                return (x, 0)
             case 1, 1:
-                return (last_coordinate, current_location[0])
+                return (0, x)
             case 1, 2:
-                return (last_coordinate - current_location[0], last_coordinate)
+                return (N - x, N)
             case 1, 3:
-                return (0, current_location[0])
+                return (N, 0)
             case 2, 0:
-                return (last_coordinate, current_location[1])
+                return (N, y)
             case 2, 1:
-                return (last_coordinate - current_location[1], last_coordinate)
+                return (y, 0)
             case 2, 2:
-                return (last_coordinate, last_coordinate - current_location[1])
+                return (N, N - y)
             case 2, 3:
-                return (current_location[1], 0)
+                return (N - y, N)
             case 3, 0:
-                return (current_location[0], last_coordinate)
+                return (x, N)
             case 3, 1:
-                return (0, current_location[0])
+                return (N, N - x)
             case 3, 2:
-                return (last_coordinate - current_location[0], last_coordinate)
+                return (N - x, N)
             case 3, 3:
-                return (last_coordinate, last_coordinate - current_location[0])
+                return (0, x)
             case other:
                 raise AssertionError
 
@@ -170,8 +236,8 @@ class JungleCube:
             next_position = sum_tuples(self.position, direction)
             if self.is_out_of_bounds(next_position):
                 angle = self.faces[self.current_face].neighbour_angles[
-                        self.direction_index
-                    ]
+                    self.direction_index
+                ]
                 next_position = self.wrap_location(
                     self.position,
                     angle,
@@ -183,7 +249,7 @@ class JungleCube:
                     return None
                 self.position = next_position
                 self.current_face = next_face
-                self.direction_index += angle
+                self.direction_index -= angle
                 self.direction_index %= len(DIRECTION_VALUES)
                 direction = DIRECTION_VALUES[self.direction_index]
             else:
@@ -191,16 +257,12 @@ class JungleCube:
                     return None
                 self.position = next_position
 
-    def in_map_location(self) -> tuple[int,int]:
+    def in_map_location(self) -> tuple[int, int]:
         return self.faces[self.current_face].in_map_position(self.position)
 
     def password(self) -> int:
         position = self.in_map_location()
-        return (
-            1000 * (position[1] + 1)
-            + 4 * (position[0] + 1)
-            + self.direction_index
-        )
+        return 1000 * (position[1] + 1) + 4 * (position[0] + 1) + self.direction_index
 
     def path_move(self, instructions):
         self.direction_index = 0
@@ -226,6 +288,7 @@ if __name__ == "__main__":
 
     jungle = JungleCube(terrain)
     instructions = parse_instructions(moves)
+
     jungle.path_move(instructions)
     print(f"The password is {jungle.password()}.")
 
