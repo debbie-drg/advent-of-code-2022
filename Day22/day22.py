@@ -102,10 +102,10 @@ class JungleCube:
 
     def set_cube_wrapping(self):
         for index in range(len(self.cube_corners)):
-            for direction_index in range(len(DIRECTION_VALUES)):
+            for direction_index in range(4):
                 if self.faces[index].neighbours[direction_index] != -1:
                     continue
-                opposite_direction = (direction_index + 2) % len(DIRECTION_VALUES)
+                opposite_direction = (direction_index + 2) % 4
                 current_index = index
                 next_index = self.faces[index].neighbours[opposite_direction]
                 while next_index not in [-1, index]:
@@ -114,12 +114,6 @@ class JungleCube:
                         opposite_direction
                     ]
                 self.faces[index].neighbours[direction_index] = current_index
-
-    @staticmethod
-    def inverse(value: int):
-        if value in [0, 2]:
-            return value
-        return (value + 2) % len(DIRECTION_VALUES)
 
     def fold_cube(self):
         set_up = [False] * len(self.cube_corners)
@@ -255,7 +249,7 @@ class JungleCube:
                 self.position = next_position
                 self.current_face = next_face
                 self.direction_index -= angle
-                self.direction_index %= len(DIRECTION_VALUES)
+                self.direction_index %= 4
                 direction = DIRECTION_VALUES[self.direction_index]
             else:
                 if self.faces[self.current_face].is_wall(next_position):
@@ -280,7 +274,7 @@ class JungleCube:
                         self.direction_index += 1
                     case "L":
                         self.direction_index -= 1
-                self.direction_index %= len(DIRECTION_VALUES)
+                self.direction_index %= 4
 
 
 if __name__ == "__main__":
