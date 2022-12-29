@@ -4,8 +4,6 @@ DIRECTION_VALUES = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 # Right, down, left, up.
 # Anlges are 0 for upright, then clockwise.
 
-checked_pairs = set()
-
 
 def parse_instructions(instructions: str) -> list:
     parsed_instructions = []
@@ -198,8 +196,6 @@ class JungleCube:
         self, current_location: tuple[int, int], angle: int
     ) -> tuple[int, int]:
         x, y, N = current_location[0], current_location[1], self.cube_size - 1
-        global checked_pairs
-        checked_pairs.add((self.direction_index, angle))
         match (self.direction_index, angle):
             case 0, 0:
                 return (0, y)
