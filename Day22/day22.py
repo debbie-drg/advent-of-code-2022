@@ -191,40 +191,23 @@ class JungleCube:
     ) -> tuple[int, int]:
         x, y, N = current_location[0], current_location[1], self.cube_size - 1
         match (self.direction_index, angle):
-            case 0, 0:
-                return (0, y)
-            case 0, 1:
-                return (y, N)
-            case 0, 2:
-                return (N, N - y)
-            case 0, 3:
-                return (N - y, 0)
-            case 1, 0:
-                return (x, 0)
-            case 1, 1:
-                return (0, N - x)
-            case 1, 2:
-                return (N - x, N)
-            case 1, 3:
-                return (N, x)
-            case 2, 0:
-                return (N, y)
-            case 2, 1:
-                return (y, 0)
-            case 2, 2:
-                return (0, N - y)
-            case 2, 3:
-                return (N - y, N)
-            case 3, 0:
-                return (x, N)
-            case 3, 1:
-                return (N, N - x)
-            case 3, 2:
-                return (N - x, 0)
-            case 3, 3:
-                return (0, x)
-            case other:
-                raise AssertionError
+            case 0, 0: return (0, y)
+            case 0, 1: return (y, N)
+            case 0, 2: return (N, N - y)
+            case 0, 3: return (N - y, 0)
+            case 1, 0: return (x, 0)
+            case 1, 1: return (0, N - x)
+            case 1, 2: return (N - x, N)
+            case 1, 3: return (N, x)
+            case 2, 0: return (N, y)
+            case 2, 1: return (y, 0)
+            case 2, 2: return (0, N - y)
+            case 2, 3: return (N - y, N)
+            case 3, 0: return (x, N)
+            case 3, 1: return (N, N - x)
+            case 3, 2: return (N - x, 0)
+            case 3, 3: return (0, x)
+            case other: raise AssertionError
 
     def is_out_of_bounds(self, position: tuple[int, int]) -> bool:
         return any([element < 0 or element >= self.cube_size for element in position])
